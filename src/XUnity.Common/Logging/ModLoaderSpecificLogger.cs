@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using XUnity.Common.Logging.SimpleLogger;
+using XUnity.Common.Logging.SimpleLogger.Logging.Handlers;
 using XUnity.Common.Utilities;
 
 namespace XUnity.Common.Logging
@@ -88,8 +90,34 @@ namespace XUnity.Common.Logging
                   }
                };
             }
+            else
+            {
+               // Adding handler - to show log messages (ILoggerHandler)
+               Logger.LoggerHandlerManager
+                  .AddHandler( new FileLoggerHandler() );
+               _logMethod = ( level, msg ) =>
+               {
+                  switch( level )
+                  {
+                     case LogLevel.Debug:
+                        Logger.Log( LogLevel.Debug, msg );
+                        break;
+                     case LogLevel.Info:
+                        Logger.Log( LogLevel.Debug, msg );
+                        break;
+                     case LogLevel.Warn:
+                        Logger.Log( LogLevel.Debug, msg );
+                        break;
+                     case LogLevel.Error:
+                        Logger.Log( LogLevel.Debug, msg );
+                        break;
+                     default:
+                        throw new ArgumentException( "level" );
+                  }
+               };
+            }
          }
-
+         
          if( _logMethod == null )
          {
             throw new Exception( "Did not recognize any mod loader!" );
