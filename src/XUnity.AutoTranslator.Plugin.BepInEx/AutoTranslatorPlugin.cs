@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BepInEx;
+using BepInEx.Unity.Mono;
 using ExIni;
 using XUnity.AutoTranslator.Plugin.Core;
 using XUnity.AutoTranslator.Plugin.Core.Configuration;

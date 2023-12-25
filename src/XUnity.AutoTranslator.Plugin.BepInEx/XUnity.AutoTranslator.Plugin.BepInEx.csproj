@@ -11,8 +11,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="BepInEx">
-			<HintPath>..\..\libs\BepInEx 5.0\BepInEx.dll</HintPath>
+		<!--<Reference Include="BepInEx.Unity.Common">
+		  <HintPath>..\..\libs\BepInEx 6.0\BepInEx.Unity.Common.dll</HintPath>
+		</Reference>
+		<Reference Include="BepInEx.Unity.Mono">
+		  <HintPath>..\..\libs\BepInEx 6.0\BepInEx.Unity.Mono.dll</HintPath>
+		</Reference>-->
+		<Reference Include="BepInEx.Core">
+		  <HintPath>..\..\libs\BepInEx 6.0 BE-672-Mono\BepInEx.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="BepInEx.Preloader.Core">
+		  <HintPath>..\..\libs\BepInEx 6.0 BE-672-Mono\BepInEx.Preloader.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="BepInEx.Unity.Common">
+		  <HintPath>..\..\libs\BepInEx 6.0 BE-672-Mono\BepInEx.Unity.Common.dll</HintPath>
+		</Reference>
+		<Reference Include="BepInEx.Unity.Mono">
+		  <HintPath>..\..\libs\BepInEx 6.0 BE-672-Mono\BepInEx.Unity.Mono.dll</HintPath>
+		</Reference>
+		<Reference Include="BepInEx.Unity.Mono.Preloader">
+		  <HintPath>..\..\libs\BepInEx 6.0 BE-672-Mono\BepInEx.Unity.Mono.Preloader.dll</HintPath>
 		</Reference>
 		<Reference Include="ExIni">
 			<HintPath>..\..\libs\ExIni.dll</HintPath>

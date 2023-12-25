@@ -19,5 +19,16 @@ namespace XUnity.AutoTranslator.Plugin.Core.Constants
       /// Gets the id used by GoogleTranslate legitimate.
       /// </summary>
       public const string GoogleTranslateLegitimate = "GoogleTranslateLegitimate";
+
+      /// <summary>
+      /// Gets the id used by UVPTranslator.
+      /// </summary>
+      public const string UVPTranslator = "UVPTranslator";
+
+
+      /// <summary>
+      /// Gets the id used by VietphraseTranslator.
+      /// </summary>
+      public const string VietphraseTranslate = "VietphraseTranslate";
    }
 }

@@ -133,6 +133,8 @@ namespace XUnity.Common.Constants
       public static readonly Type TextOverflowModes = FindClrType( "TMPro.TextOverflowModes" );
       public static readonly Type TextAlignmentOptions = FindClrType( "TMPro.TextAlignmentOptions" );
       public static readonly Type VerticalWrapMode = FindClrType( "UnityEngine.VerticalWrapMode" );
+      public static readonly Type GlyphRenderMode = FindClrType( "UnityEngine.TextCore.LowLevel.GlyphRenderMode" );
+      public static readonly Type AtlasPopulationMode = FindClrType( "TMPro.AtlasPopulationMode" );
 
       // Shimeji Engine
       public static readonly TypeContainer TextExpansion = FindType( "UnityEngine.UI.TextExpansion" );
@@ -242,6 +244,8 @@ namespace XUnity.Common.Constants
          public static CachedProperty ResizeTextForBestFit = UnityTypes.Text?.ClrType.CachedProperty( "resizeTextForBestFit" );
          public static CachedProperty ResizeTextMinSize = UnityTypes.Text?.ClrType.CachedProperty( "resizeTextMinSize" );
          public static CachedProperty ResizeTextMaxSize = UnityTypes.Text?.ClrType.CachedProperty( "resizeTextMaxSize" );
+         public static CachedProperty Text = UnityTypes.Text?.ClrType.CachedProperty( "text" );
+         public static CachedProperty GameObject = UnityTypes.Text?.ClrType.CachedProperty( "gameObject" );
       }
 
       public static class InputField_Properties
@@ -264,9 +268,11 @@ namespace XUnity.Common.Constants
 #if MANAGED
          public static CachedMethod LoadAll = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadAll", typeof( Type ) );
          public static CachedMethod LoadAllAssets = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadAllAssets", typeof( Type ) );
+         public static CachedMethod LoadAsset = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadAsset", typeof( string ), typeof( Type ) );
 #else
          public static CachedMethod LoadAll = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadAll", typeof( Il2CppSystem.Type ) );
          public static CachedMethod LoadAllAssets = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadAllAssets", typeof( Il2CppSystem.Type ) );
+         public static CachedMethod LoadAsset = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadAsset", typeof( string ), typeof( Il2CppSystem.Type ) );
 #endif
 
          public static CachedMethod LoadFromFile = UnityTypes.AssetBundle?.ClrType.CachedMethod( "LoadFromFile", typeof( string ) );
@@ -353,6 +359,18 @@ namespace XUnity.Common.Constants
             public static readonly IntPtr OnEnable = Il2CppUtilities.GetIl2CppMethod( UnityTypes.TextMeshPro?.ClassPointer, "OnEnable", typeof( void ) );
          }
 #endif
+      }
+
+      public static class GameObject_Properties
+      {
+         public static CachedProperty Name = UnityTypes.GameObject?.ClrType.CachedProperty( "name" );
+      }
+
+      public static class TextMeshProUGUI_Properties
+      {
+         public static CachedProperty Text = UnityTypes.TMP_Text?.ClrType.CachedProperty( "text" );
+         public static CachedProperty GameObject = UnityTypes.TextMeshProUGUI?.ClrType.CachedProperty( "gameObject" );
+
       }
 
       public static class TextMeshProUGUI_Methods

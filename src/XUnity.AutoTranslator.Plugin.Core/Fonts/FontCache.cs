@@ -22,9 +22,28 @@ namespace XUnity.AutoTranslator.Plugin.Core.Fonts
       {
          if( !CachedFonts.TryGetValue( size, out Font font ) )
          {
-            font = FontHelper.GetTextFont( size );
-            CachedFonts.Add( size, font );
+            if( Settings.OverrideFontWithFirstAvailable )
+            {
+               var enumerator = CachedFonts.Values.GetEnumerator();
+               while( enumerator.MoveNext() )
+               {
+                  var cfont = enumerator.Current;
+                  if( cfont != null )
+                  {
+                     if( font == null || font.fontSize <= cfont.fontSize )
+                     {
+                        font = cfont;
+                     }
+                  }
+               }
+            }
+            if( font == null )
+            {
+               font = FontHelper.GetTextFont( size );
+               CachedFonts.Add( size, font );
+            }
          }
+         if (font != null) GameObject.DontDestroyOnLoad( font );
          return font;
       }
 

@@ -25,8 +25,8 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
       public static readonly int MaxFailuresForSameTextPerEndpoint = 3;
       public static readonly string TranslatorsFolder = "Translators";
       public static readonly int MaxMaxCharactersPerTranslation = 2500;
-      public static readonly string DefaultLanguage = "en";
-      public static readonly string DefaultFromLanguage = "ja";
+      public static readonly string DefaultLanguage = "vi";
+      public static readonly string DefaultFromLanguage = "zh-CN";
       public static readonly string EnglishLanguage = "en";
       public static readonly string Romaji = "romaji";
       public static readonly int MaxErrors = 5;
@@ -137,6 +137,11 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
       public static bool ReloadTranslationsOnFileChange;
       public static bool DisableTextMeshProScrollInEffects;
       public static bool CacheParsedTranslations;
+      public static bool OverrideFontWithFirstAvailable;
+      public static bool SuspendFontChanging;
+      public static string SkipFontChangeNames;
+      public static bool DebugControlName;
+      public static bool EnableReiLogging;
 
       public static string TextureDirectory;
       public static bool EnableTextureTranslation;
@@ -216,8 +221,8 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
                XuaLogger.AutoTranslator.Warn( e, "An error occurred while trying to determine TextMesh Pro version." );
             }
 
-            ServiceEndpoint = PluginEnvironment.Current.Preferences.GetOrDefault( "Service", "Endpoint", KnownTranslateEndpointNames.GoogleTranslateV2 );
-            FallbackServiceEndpoint = PluginEnvironment.Current.Preferences.GetOrDefault( "Service", "FallbackEndpoint", string.Empty );
+            ServiceEndpoint = PluginEnvironment.Current.Preferences.GetOrDefault( "Service", "Endpoint", KnownTranslateEndpointNames.VietphraseTranslate );
+            FallbackServiceEndpoint = PluginEnvironment.Current.Preferences.GetOrDefault( "Service", "FallbackEndpoint", KnownTranslateEndpointNames.UVPTranslator );
 
             Language = string.Intern( PluginEnvironment.Current.Preferences.GetOrDefault( "General", "Language", DefaultLanguage ) );
             FromLanguage = string.Intern( PluginEnvironment.Current.Preferences.GetOrDefault( "General", "FromLanguage", DefaultFromLanguage ) );
@@ -288,6 +293,10 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
             ReloadTranslationsOnFileChange = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "ReloadTranslationsOnFileChange", false );
             DisableTextMeshProScrollInEffects = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "DisableTextMeshProScrollInEffects", ApplicationName.Equals( "SamuraiVandalism", StringComparison.OrdinalIgnoreCase ) || UnityTypes.UguiNovelText != null );
             CacheParsedTranslations = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "CacheParsedTranslations", false );
+            OverrideFontWithFirstAvailable = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "OverrideFontWithFirstAvailable", true );
+            SuspendFontChanging = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "SuspendFontChanging", false );
+            SkipFontChangeNames = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "SkipFontChangeNames", "DamageFont,comboText" );
+            DebugControlName = PluginEnvironment.Current.Preferences.GetOrDefault( "General", "DebugControlName", false );
 
             TextureDirectory = PluginEnvironment.Current.Preferences.GetOrDefault( "Texture", "TextureDirectory", Path.Combine( "Translation", Path.Combine( "{Lang}", "Texture" ) ) );
             TexturesPath = Path.Combine( PluginEnvironment.Current.TranslationPath, Settings.TextureDirectory ).Parameterize();

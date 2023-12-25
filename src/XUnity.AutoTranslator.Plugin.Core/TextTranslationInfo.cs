@@ -12,6 +12,7 @@ using XUnity.AutoTranslator.Plugin.Utilities;
 using XUnity.Common.Constants;
 using XUnity.Common.Extensions;
 using XUnity.Common.Harmony;
+using XUnity.Common.Logging;
 using XUnity.Common.Utilities;
 
 namespace XUnity.AutoTranslator.Plugin.Core
@@ -94,6 +95,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
 
       public void ChangeFont( object ui )
       {
+         if( Settings.SuspendFontChanging ) return;
          if( ui == null ) return;
 
          var type = ui.GetUnityType();
@@ -105,10 +107,73 @@ namespace XUnity.AutoTranslator.Plugin.Core
             var Text_fontProperty = UnityTypes.Text_Properties.Font;
             var previousFont = (Font)Text_fontProperty.Get( ui );
             var Font_fontSizeProperty = UnityTypes.Font_Properties.FontSize;
-
+            if( previousFont == null ) return;
+            if( previousFont.name.Trim().Equals( Settings.OverrideFont.Trim() ) ) return;
             var newFont = FontCache.GetOrCreate( (int)Font_fontSizeProperty?.Get( previousFont ) );
-            if( newFont == null || previousFont == null ) return;
+            // if( newFont == null || previousFont == null ) return;
+            if( newFont == null ) return;
+            if( newFont.name.Equals( previousFont.name ) ) return;
+            try
+            {
+               var goProp = UnityTypes.Text_Properties.GameObject;
+               var textProp = UnityTypes.Text_Properties.Text;
+               var go = goProp.Get( ui );
+               var goName = UnityTypes.GameObject_Properties.Name;
+               var goNameValue = goName.Get( go );
+               if( Settings.DebugControlName )
+               {
+                  XuaLogger.AutoTranslator.Info( $"Unity.Text: {goName.Get( go )}: Change {previousFont.name}=>{newFont.name} - {textProp.Get( ui )}" );
+               }
+               if( !string.IsNullOrEmpty( Settings.SkipFontChangeNames ) )
+               {
+                  string[] splitNames = Settings.SkipFontChangeNames.Split( ',' );
+                  bool shouldReturn = false;
+                  foreach( var splitName in splitNames )
+                  {
+                     if( splitName.Trim().Equals( goNameValue ) )
+                     {
+                        shouldReturn = true;
+                        break;
+                     }
+                  }
+                  if( shouldReturn ) { return; }
+               }
+            }
+            catch( Exception ex )
+            {
+               XuaLogger.AutoTranslator.Info( ex, "UnityText:" + ex.Message );
+            }
 
+            try
+            {
+               var goProp = UnityTypes.Text_Properties.GameObject;
+               var textProp = UnityTypes.Text_Properties.Text;
+               var go = goProp.Get( ui );
+               var goName = UnityTypes.GameObject_Properties.Name;
+               var goNameValue = goName.Get( go );
+               if( Settings.DebugControlName )
+               {
+                  XuaLogger.AutoTranslator.Info( $"Unity.Text: {goName.Get( go )}: Change {previousFont.name}=>{newFont.name} - {textProp.Get( ui )}" );
+               }
+               if( !string.IsNullOrEmpty( Settings.SkipFontChangeNames ) )
+               {
+                  string[] splitNames = Settings.SkipFontChangeNames.Split( ',' );
+                  bool shouldReturn = false;
+                  foreach( var splitName in splitNames )
+                  {
+                     if( splitName.Trim().Equals( goNameValue ) )
+                     {
+                        shouldReturn = true;
+                        break;
+                     }
+                  }
+                  if( shouldReturn ) { return; }
+               }
+            }
+            catch( Exception ex )
+            {
+               XuaLogger.AutoTranslator.Info( ex, "UnityText:" + ex.Message );
+            }
             if( !UnityObjectReferenceComparer.Default.Equals( newFont, previousFont ) )
             {
                Text_fontProperty.Set( ui, newFont );
@@ -127,8 +192,10 @@ namespace XUnity.AutoTranslator.Plugin.Core
             var fontProperty = clrType.CachedProperty( "font" );
 
             var previousFont = fontProperty.Get( ui );
+            if( previousFont == null ) return;
             var newFont = FontCache.GetOrCreateOverrideFontTextMeshPro();
-            if( newFont == null || previousFont == null ) return;
+            // if( newFont == null || previousFont == null ) return;
+            if( newFont == null ) return;
 
             if( !UnityObjectReferenceComparer.Default.Equals( newFont, previousFont ) )
             {
@@ -137,6 +204,12 @@ namespace XUnity.AutoTranslator.Plugin.Core
                {
                   fontProperty.Set( obj, previousFont );
                };
+            }
+
+            if( Settings.DebugControlName )
+            {
+               PrintDebugControlLog( ui );
+               XuaLogger.AutoTranslator.Info( "TMPro cannot print fontSize" );
             }
          }
       }
@@ -593,6 +666,47 @@ namespace XUnity.AutoTranslator.Plugin.Core
          _unresize = null;
 
          _alteredFontSize = null;
+      }
+
+      internal void PrintDebugControlLog( object ui )
+      {
+         if( Settings.DebugControlName && ui != null )
+         {
+            var type = ui.GetUnityType();
+            if( UnityTypes.Text != null && UnityTypes.Text.IsAssignableFrom( type ) )
+            {
+               try
+               {
+                  var goProp = UnityTypes.Text_Properties.GameObject;
+                  var textProp = UnityTypes.Text_Properties.Text;
+                  var fontSize = UnityTypes.Text_Properties.FontSize;
+                  var go = goProp.Get( ui );
+                  var goName = UnityTypes.GameObject_Properties.Name;
+                  XuaLogger.AutoTranslator.Info( $"Unity.Text: {goName.Get( go )} -size {fontSize.Get( ui )}- {textProp.Get( ui )}" );
+                  XuaLogger.AutoTranslator.Info( $"Unity.Text Original: {OriginalText}" );
+               }
+               catch( Exception ex )
+               {
+                  XuaLogger.AutoTranslator.Info( ex, "UnityText:" + ex.Message );
+               }
+            }
+            else if( type == UnityTypes.TextMeshPro?.UnityType || type == UnityTypes.TextMeshProUGUI?.UnityType )
+            {
+
+               try
+               {
+                  var goProp = UnityTypes.TextMeshProUGUI_Properties.GameObject;
+                  var textProp = UnityTypes.TextMeshProUGUI_Properties.Text;
+                  var go = goProp.Get( ui );
+                  var goName = UnityTypes.GameObject_Properties.Name;
+                  XuaLogger.AutoTranslator.Info( $"TMPro: {goName.Get( go )} - {textProp.Get( ui )}" );
+               }
+               catch( Exception ex )
+               {
+                  XuaLogger.AutoTranslator.Info( ex, "TMPro:" + ex.Message );
+               }
+            }
+         }
       }
    }
 }

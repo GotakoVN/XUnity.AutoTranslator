@@ -160,7 +160,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
          // load all translations from files
          LoadTranslations( false );
 
-         XuaLogger.AutoTranslator.Info( $"Loaded XUnity.AutoTranslator into Unity [{Application.unityVersion}] game." );
+         XuaLogger.AutoTranslator.Info( $"Loaded XUnity.AutoTranslator into Unity [{Application.unityVersion}] game:{Application.productName}" );
       }
 
       private static void LoadFallbackFont()
@@ -403,21 +403,25 @@ namespace XUnity.AutoTranslator.Plugin.Core
          // check if font is supported
          try
          {
+            _hasValidOverrideFont = true;
             if( !string.IsNullOrEmpty( Settings.OverrideFont ) )
             {
                var available = GetSupportedFonts();
+               var fontPath = Path.Combine( Paths.GameRoot, Settings.OverrideFont ) + ".ttf";
+               var notExistFontPath = !File.Exists( fontPath );
+               XuaLogger.AutoTranslator.Info( $"fontPath={fontPath}");
                if( available == null )
                {
                   XuaLogger.AutoTranslator.Warn( $"Unable to validate OverrideFont validity due to shimmed APIs." );
                }
                else if( !available.Contains( Settings.OverrideFont ) )
                {
-                  XuaLogger.AutoTranslator.Error( $"The specified override font is not available. Available fonts: " + string.Join( ", ", available ) );
-                  Settings.OverrideFont = null;
-               }
-               else
-               {
-                  _hasValidOverrideFont = true;
+                  if( notExistFontPath )
+                  {
+                     XuaLogger.AutoTranslator.Error( $"The specified override font is not available. Available fonts: " + string.Join( ", ", available ) );
+                     XuaLogger.AutoTranslator.Info( "However, XUnity will try to load it from system." );
+                     // Settings.OverrideFont = null;
+                  }
                }
             }
 
@@ -552,7 +556,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
       private void LoadTranslations( bool reload )
       {
          ResizeCache.LoadResizeCommandsInFiles();
-
+         
          SettingsTranslationsInitializer.LoadTranslations();
          TextCache.LoadTranslationFiles();
 
@@ -883,7 +887,10 @@ namespace XUnity.AutoTranslator.Plugin.Core
                {
                   info.IsCurrentlySettingText = true;
                }
-
+               if( Settings.DebugControlName )
+               {
+                  info.PrintDebugControlLog( ui );
+               }
                if( Settings.EnableTextPathLogging )
                {
                   var path = ui.GetPath();
