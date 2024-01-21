@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Obfuscator>
+	<!-- https://docs.obfuscar.com/getting-started/configuration.html -->
+	<!-- https://docs.obfuscar.com/getting-started/configuration.html -->
+	<Var name="InPath" value="bin\Release\net35" />
+	<Var name="OutPath" value="bin\Release\net35\obfuscated" />
+	<AssemblySearchPath path="..\..\Libs" />
+	<Var name="KeepPublicApi" value="true" />
+	<Var name="HidePrivateApi" value="true" />
+	<Var name="MarkedOnly" value="true" />
+	<Var name="HideStrings" value="true" />
+	<Var name="ReuseNames" value="false" />
+	<Module file="bin\Release\net35\XUnity.AutoTranslator.Plugin.Core.dll" />
+</Obfuscator>

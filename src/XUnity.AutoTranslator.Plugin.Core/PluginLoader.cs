@@ -39,6 +39,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
             Plugin = obj.AddComponent<AutoTranslationPlugin>();
             MonoBehaviour = Plugin;
             GameObject.DontDestroyOnLoad( obj );
+            obj.AddComponent<HookNewToolBehaviour>();
 #else
             Plugin = new AutoTranslationPlugin();
             var obj = new GameObject( "___XUnityAutoTranslator" );

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Obfuscator>
+	<!-- https://docs.obfuscar.com/getting-started/configuration.html -->
+	<!-- https://docs.obfuscar.com/getting-started/configuration.html -->
+	<Var name="InPath" value="bin\Release\net6.0" />
+	<Var name="OutPath" value="bin\Release\net6.0\obfuscated" />
+	<AssemblySearchPath path="..\..\libs" />
+	<AssemblySearchPath path="..\..\libs\net60" />
+	<AssemblySearchPath path="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.25\ref\net6.0" />
+	<Var name="KeepPublicApi" value="true" />
+	<Var name="HidePrivateApi" value="true" />
+	<Var name="MarkedOnly" value="true" />
+	<Var name="ForceMarkedOnly" value="true" />
+	<Var name="RenameFields" value="true" />
+	<Var name="HideStrings" value="true" />
+	<Var name="ReuseNames" value="false" />
+	<Module file="bin\Release\net6.0\XUnity.AutoTranslator.Plugin.Core.dll" />
+</Obfuscator>

@@ -42,6 +42,8 @@ namespace XUnity.AutoTranslator.Plugin.Core
 
       public TranslationEndpointManager PassthroughEndpoint { get; private set; }
 
+      public string EndpointProtocol { get; set; }
+
       public bool IsFallbackAvailableFor(TranslationEndpointManager endpoint)
       {
          return endpoint != null && FallbackEndpoint != null

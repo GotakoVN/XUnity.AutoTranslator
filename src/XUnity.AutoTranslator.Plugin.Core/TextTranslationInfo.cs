@@ -236,8 +236,43 @@ namespace XUnity.AutoTranslator.Plugin.Core
 
             if( Settings.DebugControlName )
             {
-               PrintDebugControlLog( ui );
+               PrintDebugControlLog( ui, "" );
                XuaLogger.AutoTranslator.Info( "TMPro cannot print fontSize" );
+            }
+         }
+         else if ( UnityTypes.UILabel != null && UnityTypes.UILabel.IsAssignableFrom( type ) )
+         {
+            if( string.IsNullOrEmpty( Settings.OverrideFont ) ) return;
+            try
+            {
+               var fontProperty = UnityTypes.UILabel_Properties.TrueTypeFont;
+               if (fontProperty == null) return;
+               var previousFont = (Font)fontProperty.Get( ui );
+               var Font_fontSizeProperty = UnityTypes.Font_Properties.FontSize;
+               if( previousFont == null ) return;
+               if( previousFont.name.Trim().Equals( Settings.OverrideFont.Trim() ) ) return;
+               var newFont = FontCache.GetOrCreate( (int)Font_fontSizeProperty?.Get( previousFont ) );
+               if( newFont == null ) return;
+               if( newFont.name.Equals( previousFont.name ) ) return;
+
+               if( !UnityObjectReferenceComparer.Default.Equals( newFont, previousFont ) )
+               {
+                  fontProperty.Set( ui, newFont );
+                  _unfont = obj =>
+                  {
+                     fontProperty.Set( obj, previousFont );
+                  };
+               }
+
+               if( Settings.DebugControlName )
+               {
+                  PrintDebugControlLog( ui, "" );
+                  XuaLogger.AutoTranslator.Info( "UILabel cannot print fontSize" );
+               }
+            }
+            catch( Exception ex )
+            {
+               XuaLogger.AutoTranslator.Info( ex, "Error when doing work on UILabel" );
             }
          }
       }
@@ -729,7 +764,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
          _alteredFontSize = null;
       }
 
-      internal void PrintDebugControlLog( object ui )
+      internal void PrintDebugControlLog( object ui, string text )
       {
          if( Settings.DebugControlName && ui != null )
          {
@@ -765,6 +800,17 @@ namespace XUnity.AutoTranslator.Plugin.Core
                catch( Exception ex )
                {
                   XuaLogger.AutoTranslator.Info( ex, "TMPro:" + ex.Message );
+               }
+            }
+            else
+            {
+               try
+               {
+                  XuaLogger.AutoTranslator.Info( $"Unknown - type: {type.FullName} - {text}" );
+               }
+               catch( Exception ex )
+               {
+                  XuaLogger.AutoTranslator.Info( ex, "Unknown:" + ex.Message );
                }
             }
          }

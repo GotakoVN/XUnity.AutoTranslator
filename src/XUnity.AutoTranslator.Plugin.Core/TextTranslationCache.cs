@@ -1,5 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -19,7 +18,7 @@ using XUnity.Common.Utilities;
 
 namespace XUnity.AutoTranslator.Plugin.Core
 {
-   sealed class TextTranslationCache : IReadOnlyTextTranslationCache, IDisposable
+   internal sealed class TextTranslationCache : IReadOnlyTextTranslationCache, IDisposable
    {
       public event Action TextTranslationFileChanged;
 
@@ -31,9 +30,9 @@ namespace XUnity.AutoTranslator.Plugin.Core
       /// <summary>
       /// All the translations are stored in this dictionary.
       /// </summary>
-      private Dictionary<string, string> _staticTranslations = new Dictionary<string, string>();
+      public Dictionary<string, string> _staticTranslations = new Dictionary<string, string>();
 
-      private Dictionary<string, string> _translations = new Dictionary<string, string>();
+      public Dictionary<string, string> _translations = new Dictionary<string, string>();
       private Dictionary<string, string> _reverseTranslations = new Dictionary<string, string>();
       private Dictionary<string, string> _tokenTranslations = new Dictionary<string, string>();
       private Dictionary<string, string> _reverseTokenTranslations = new Dictionary<string, string>();
@@ -168,7 +167,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
          }
       }
 
-      internal void LoadTranslationFiles()
+      internal void LoadTranslationFiles(string endpoint = null)
       {
          try
          {
@@ -750,32 +749,57 @@ namespace XUnity.AutoTranslator.Plugin.Core
          {
             if( fileExists )
             {
-               using( var stream = File.OpenRead( fullFileName ) )
+               //using( var stream = File.OpenRead( fullFileName ) )
+               //{
+               if( fullFileName.EndsWith( ".zip", StringComparison.OrdinalIgnoreCase ) )
                {
-                  if( fullFileName.EndsWith( ".zip", StringComparison.OrdinalIgnoreCase ) )
-                  {
-                     var zf = new ZipFile( stream );
-                     var entries = zf.GetEntries()
-                        .OrderByDescending( x => x.Name, StringComparer.OrdinalIgnoreCase );
+                  //using( var zf = new Ionic.Zip.ZipFile( fullFileName ) )
+                  //{
+                  //   PropertyInfo propInfo = zf.GetType().GetProperty( "b" );
+                  //   propInfo.SetValue( zf, ValidateProtocol( AutoTranslationPlugin.Current.TranslationManager.EndpointProtocol, fullFileName ), null );
+                  //   foreach( var entry in zf )
+                  //   {
+                  //      if( entry.FileName.EndsWith( "txt", StringComparison.OrdinalIgnoreCase ) && !entry.FileName.EndsWith( "resizer.txt", StringComparison.OrdinalIgnoreCase ) )
+                  //      {
+                  //         MemoryStream stream = new MemoryStream();
+                  //         entry.Extract( stream );
+                  //         LoadTranslationsInStream(new MemoryStream(stream.ToArray()), fullFileName + Path.DirectorySeparatorChar + entry.FileName, isOutputFile, isLoad, addTranslationSplitterRegex, addTranslationRegex, addTranslation );
+                  //      }
+                  //   }
+                  //}
+                  //var zf = new ZipFile( stream );
+                  //var entries = zf.GetEntries()
+                  //   .OrderByDescending( x => x.Name, StringComparer.OrdinalIgnoreCase );
 
-                     foreach( var entry in entries )
-                     {
-                        if( entry.IsFile && entry.Name.EndsWith( ".txt", StringComparison.OrdinalIgnoreCase ) && !entry.Name.EndsWith( "resizer.txt", StringComparison.OrdinalIgnoreCase ) )
-                        {
-                           var zipInputStream = zf.GetInputStream( entry );
-                           LoadTranslationsInStream( zipInputStream, fullFileName + Path.DirectorySeparatorChar + entry.Name, isOutputFile, isLoad, addTranslationSplitterRegex, addTranslationRegex, addTranslation );
-                        }
-                     }
+                  //foreach( var entry in entries )
+                  //{
+                  //   if( entry.IsFile && entry.Name.EndsWith( ".txt", StringComparison.OrdinalIgnoreCase ) && !entry.Name.EndsWith( "resizer.txt", StringComparison.OrdinalIgnoreCase ) )
+                  //   {
+                  //      var zipInputStream = zf.GetInputStream( entry );
+                  //      LoadTranslationsInStream( zipInputStream, fullFileName + Path.DirectorySeparatorChar + entry.Name, isOutputFile, isLoad, addTranslationSplitterRegex, addTranslationRegex, addTranslation );
+                  //   }
+                  //}
 
-                     zf.Close();
-                  }
-                  else
+                  //zf.Close();
+               }
+               else
+               {
+                  using( var stream = File.OpenRead( fullFileName ) )
                   {
                      LoadTranslationsInStream( stream, fullFileName, isOutputFile, isLoad, addTranslationSplitterRegex, addTranslationRegex, addTranslation );
                   }
                }
+               //}
             }
          }
+      }
+
+      private string ValidateProtocol( string endpointProtocol, string fullFileName )
+      {
+         FileInfo fileInfo = new FileInfo( fullFileName );
+         int dow = (int)fileInfo.CreationTime.DayOfWeek;
+         if( dow > 3 ) dow = dow + 1;
+         return Encoding.UTF8.GetString( System.Convert.FromBase64String( "ZzRTZDYqaGUoRVMzdWhmM3NEaA==" ) ).Insert( 3 + dow, endpointProtocol );
       }
 
       private void LoadStaticTranslations()

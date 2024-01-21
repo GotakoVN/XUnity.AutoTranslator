@@ -116,15 +116,22 @@ namespace XUnity.AutoTranslator.Plugin.Core.UIResize
                // Perhaps use this instead???? https://github.com/icsharpcode/SharpZipLib/wiki/Unpack-a-zip-using-ZipInputStream
                if( fullFileName.EndsWith( ".zip", StringComparison.OrdinalIgnoreCase ) )
                {
-                  using( var zipInputStream = new ZipInputStream( stream ) )
+                  try
                   {
-                     while( zipInputStream.GetNextEntry() is ZipEntry entry )
+                     using( var zipInputStream = new ZipInputStream( stream ) )
                      {
-                        if( entry.IsFile && entry.Name.EndsWith( "resizer.txt", StringComparison.OrdinalIgnoreCase ) )
+                        while( zipInputStream.GetNextEntry() is ZipEntry entry )
                         {
-                           LoadResizeCommandsInStream( zipInputStream, fullFileName + Path.DirectorySeparatorChar + entry.Name );
+                           if( entry.IsFile && entry.Name.EndsWith( "resizer.txt", StringComparison.OrdinalIgnoreCase ) )
+                           {
+                              LoadResizeCommandsInStream( zipInputStream, fullFileName + Path.DirectorySeparatorChar + entry.Name );
+                           }
                         }
                      }
+                  }
+                  catch(Exception e )
+                  {
+                     XuaLogger.AutoTranslator.Warn( $"Cannot load resizer in {fullFileName}");
                   }
                }
                else

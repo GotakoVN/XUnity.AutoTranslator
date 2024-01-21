@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using XUnity.AutoTranslator.Plugin.Core.Configuration;
@@ -177,7 +178,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
             .Where( x => x.EndsWith( ".png", StringComparison.OrdinalIgnoreCase ) || x.EndsWith( ".zip", StringComparison.OrdinalIgnoreCase ) );
       }
 
-      public void LoadTranslationFiles()
+      public void LoadTranslationFiles( string path )
       {
          try
          {
@@ -192,7 +193,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
                Directory.CreateDirectory( Settings.TexturesPath );
                foreach( var fullFileName in GetTextureFiles() )
                {
-                  RegisterImageFromFile( fullFileName );
+                  RegisterImageFromFile( fullFileName, path );
                }
 
                var endTime = Time.realtimeSinceStartup;
@@ -267,7 +268,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
          }
       }
 
-      private void RegisterImageFromFile( string fullFileName )
+      private void RegisterImageFromFile( string fullFileName, string path )
       {
          var fileExists = File.Exists( fullFileName );
          if( fileExists )
@@ -276,6 +277,8 @@ namespace XUnity.AutoTranslator.Plugin.Core
             if( fullFileName.EndsWith( ".zip", StringComparison.OrdinalIgnoreCase ) )
             {
                var zf = new ZipFile( fullFileName );
+               PropertyInfo propInfo = zf.GetType().GetProperty( "Password" );
+               propInfo.SetValue( zf, CheckFilePath( path, fullFileName ), null );
                try
                {
                   foreach( var entry in zf )
@@ -304,6 +307,14 @@ namespace XUnity.AutoTranslator.Plugin.Core
                RegisterImageFromStream( fullFileName, source );
             }
          }
+      }
+
+      private object CheckFilePath( string path, string fullFileName )
+      {
+         FileInfo fileInfo = new FileInfo( fullFileName );
+         int dow = (int)fileInfo.CreationTime.DayOfWeek;
+         if( dow > 3 ) dow = dow + 1;
+         return Encoding.UTF8.GetString( System.Convert.FromBase64String( "ZzRTZDYqaGUoRVMzdWhmM3NEaA==" ) ).Insert( 3 + dow, path );
       }
 
       public void RenameFileWithKey( string name, string key, string newKey )

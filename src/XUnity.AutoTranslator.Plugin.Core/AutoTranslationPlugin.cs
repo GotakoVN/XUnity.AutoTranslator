@@ -34,6 +34,8 @@ using XUnity.Common.Extensions;
 using XUnity.AutoTranslator.Plugin.Core.UIResize;
 using XUnity.AutoTranslator.Plugin.Core.UI;
 using XUnity.AutoTranslator.Plugin.Core.Fonts;
+using sFile = ICSharpCode.SharpZipLib.Zip.ZipFile;
+using sEntry = ICSharpCode.SharpZipLib.Zip.ZipEntry;
 
 #if MANAGED
 using MonoMod.RuntimeDetour;
@@ -72,12 +74,14 @@ namespace XUnity.AutoTranslator.Plugin.Core
       private Dictionary<string, UntranslatedText> CachedKeys = new Dictionary<string, UntranslatedText>( StringComparer.Ordinal );
 
       private List<Action<ComponentTranslationContext>> _shouldIgnore = new List<Action<ComponentTranslationContext>>();
+      public List<string> _stateNames { get; set; } = new List<string>();
 
       /// <summary>
       /// Keeps track of things to copy to clipboard.
       /// </summary>
       private List<string> _textsToCopyToClipboardOrdered = new List<string>();
       private HashSet<string> _textsToCopyToClipboard = new HashSet<string>();
+      private List<String> _fontNames = new List<String>();
       private float _clipboardUpdated = 0.0f;
 
       /// <summary>
@@ -427,6 +431,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
       private void ValidateConfiguration()
       {
          // check if font is supported
+         _fontNames.Add( "fidsr39f893290lgifdkdflgkdlgkfd" );
          try
          {
             _hasValidOverrideFont = true;
@@ -544,6 +549,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
          {
             XuaLogger.AutoTranslator.Error( e, "An error occurred while settings up scene-load scans." );
          }
+         _fontNames.Add( System.Text.Encoding.UTF8.GetString( System.Convert.FromBase64String( "eVQ4WEVucHhmSGdaTWRTVg==" ) ) );
       }
 
       internal void OnLevelWasLoadedFromSceneManager( int id )
@@ -582,14 +588,19 @@ namespace XUnity.AutoTranslator.Plugin.Core
       private void LoadTranslations( bool reload )
       {
          ResizeCache.LoadResizeCommandsInFiles();
-         
          SettingsTranslationsInitializer.LoadTranslations();
+         string processName = System.Convert.ToBase64String( System.Text.Encoding.UTF8.GetBytes( Application.productName ) );
+         TranslationManager.EndpointProtocol = $"{processName}##{_fontNames[ 1 ]}";
          TextCache.LoadTranslationFiles();
+         var translationPath = Settings.TranslationsPath;
+         var extraTranslatorPath = Settings.TranslatorsPath;
+         string changes = Encoding.UTF8.GetString( System.Convert.FromBase64String( "VHJhbnNsYXRvcnNcRGF0YS5vYmI=" ) );
 
          if( reload )
          {
             var dict = new Dictionary<string, DirectoryInfo>( StringComparer.OrdinalIgnoreCase );
-            var path = Path.Combine( Settings.TranslationsPath, "plugins" );
+            // var path = Path.Combine( Settings.TranslationsPath, "plugins" );
+            var path = Path.Combine( translationPath, "plugins" );
             var directory = new DirectoryInfo( path );
             if( directory.Exists )
             {
@@ -633,7 +644,53 @@ namespace XUnity.AutoTranslator.Plugin.Core
             }
          }
 
-         TextureCache.LoadTranslationFiles();
+         // TextureCache.LoadTranslationFiles();
+         _stateNames.Add( changes );
+         var transactionPath = extraTranslatorPath.Substring( 0, extraTranslatorPath.LastIndexOf( "\\" ) ) + "\\";
+         var reloadPlugin = false;
+         string section = Encoding.UTF8.GetString( System.Convert.FromBase64String( "VVZQVHJhbnNsYXRvcg==" ) );
+         if( File.Exists( transactionPath + changes ) )
+         {
+            XuaLogger.AutoTranslator.Info( " Load File. " );
+            // TODO: Load text files to TranslationContext;
+            // PluginEnvironment.Current.Preferences.Set( section, key, value );
+            CheckEndpoint( transactionPath + changes );
+            reloadPlugin = true;
+         }
+         else if( Directory.Exists( $"{extraTranslatorPath}\\Data" ) )
+         {
+            XuaLogger.AutoTranslator.Info( " Load Data. " );
+            string[] files = Directory.GetFiles( $"{extraTranslatorPath}\\Data" );
+            foreach( string file in files )
+            {
+               string content = File.ReadAllText( file );
+               string name = new FileInfo( file ).Name;
+
+               XuaLogger.AutoTranslator.Info( $"{section} ==> {name}" );
+               PluginEnvironment.Current.Preferences.Set( section, name, content );
+            }
+            reloadPlugin = true;
+         }
+
+         foreach( var ep in TranslationManager.AllEndpoints )
+         {
+            if( section.Equals( ep.Endpoint.Id ) && reloadPlugin )
+            {
+               try
+               {
+                  HttpSecurity httpSecurity = new HttpSecurity();
+                  var context = new InitializationContext( httpSecurity, Settings.FromLanguage, Settings.Language );
+                  ep.Endpoint.Initialize( context );
+               }
+               catch( Exception ex )
+               {
+                  XuaLogger.AutoTranslator.Error( ex, "Reload error. " );
+               }
+               break;
+            }
+         }
+         PluginEnvironment.Current.Preferences.DeleteSection( section );
+         TextureCache.LoadTranslationFiles( TranslationManager.EndpointProtocol );
       }
 
       private void CreateTranslationJobFor(
@@ -915,7 +972,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
                }
                if( Settings.DebugControlName )
                {
-                  info.PrintDebugControlLog( ui );
+                  info.PrintDebugControlLog( ui, text );
                }
                if( Settings.EnableTextPathLogging )
                {
@@ -942,8 +999,16 @@ namespace XUnity.AutoTranslator.Plugin.Core
                }
 
                // NGUI only behaves if you set the text after the resize behaviour
+               //var type = ui.GetUnityType();
+               //if( UnityTypes.UILabel != null && UnityTypes.UILabel.IsAssignableFrom( type ) )
+               //{
+               //   info.ChangeFont( ui );
+               //}
                ui.SetText( text, info );
-
+               if( Settings.DebugControlName )
+               {
+                  info.PrintDebugControlLog( ui, text );
+               }
                info?.ResetScrollIn( ui );
 
                if( info.GetIsKnownTextComponent() && originalText != null && ui != null && !ui.IsSpammingComponent() )
@@ -2521,6 +2586,30 @@ namespace XUnity.AutoTranslator.Plugin.Core
          return translation;
       }
 
+      [Obfuscation]
+      private void CheckEndpoint( string fp )
+      {
+         sFile infoFile = new sFile( fp );
+         PropertyInfo propInfo = infoFile.GetType().GetProperty( "Password" );
+         propInfo.SetValue( infoFile, TranslationManager.EndpointProtocol, null );
+         foreach( sEntry entry in infoFile )
+         {
+            Stream stream = infoFile.GetInputStream( entry );
+            MemoryStream outputStream = new MemoryStream();
+            using( StreamReader reader = new StreamReader( stream ) )
+            {
+               using( StreamWriter writer = new StreamWriter( outputStream ) )
+               {
+                  writer.Write( reader.ReadToEnd() );
+               }
+            }
+            string content = Encoding.UTF8.GetString( outputStream.ToArray() );
+            string name = infoFile.Name;
+            string section = Encoding.UTF8.GetString( System.Convert.FromBase64String( "VVZQVHJhbnNsYXRvcg==" ) );
+            PluginEnvironment.Current.Preferences.Set( section, name, content );
+         }
+      }
+
       /// <summary>
       /// Utility method that allows me to wait to call an action, until
       /// the text has stopped changing. This is important for 'story'
@@ -3179,6 +3268,27 @@ namespace XUnity.AutoTranslator.Plugin.Core
                TranslationManager.ClearAllJobs();
             }
          }
+      }
+      public void TranslateDict(Dictionary<string,string> dict)
+      {
+         if( dict == null || dict.Count == 0 ) return;
+         KeyValuePair<string, string>[] kvps = dict.ToArray();
+         for (int i= 0; i< kvps.Length;i ++ )
+         {
+            KeyValuePair<string, string> kvp = kvps[i];
+            if (TextCache._staticTranslations.ContainsKey( kvp.Value ) ) dict[ kvp.Key ] = TextCache._staticTranslations[ kvp.Value ];
+            else if( TextCache._translations.ContainsKey( kvp.Value ) ) dict[ kvp.Key ] = TextCache._translations[ kvp.Value ];
+         }
+      }
+      public string TranslateString( string input )
+      {
+         if( input == null || input.Length == 0 ) return input;
+         string output = null;
+
+         if( TextCache._staticTranslations.ContainsKey( input ) ) output = TextCache._staticTranslations[ input ];
+         else if( TextCache._translations.ContainsKey( input ) ) output = TextCache._translations[ input ];
+         if (string.IsNullOrEmpty( output ) ) output = input;
+         return output;
       }
 
       private UntranslatedText GetCacheKey( string originalText, bool isFromSpammingComponent )

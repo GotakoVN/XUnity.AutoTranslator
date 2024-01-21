@@ -232,6 +232,7 @@ namespace XUnity.Common.Constants
          public static CachedProperty OverflowMethod = UnityTypes.UILabel?.ClrType.CachedProperty( "overflowMethod" );
          public static CachedProperty SpacingX = UnityTypes.UILabel?.ClrType.CachedProperty( "spacingX" );
          public static CachedProperty UseFloatSpacing = UnityTypes.UILabel?.ClrType.CachedProperty( "useFloatSpacing" );
+         public static CachedProperty TrueTypeFont = UnityTypes.UILabel?.ClrType.CachedProperty( "trueTypeFont" );
       }
 
       public static class Text_Properties

@@ -27,6 +27,43 @@
 	<PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
 		<DefineConstants>IL2CPP</DefineConstants>
 	</PropertyGroup>
+	<PropertyGroup>
+
+		<!-- ObfuscatorToolsPath -->
+		<ObfuscatorToolsPath Condition="'$(NuGetProjectStyle)' == 'PackageReference'">$(MSBuildThisFileDirectory)..\..\..\obfuscar\2.2.38\tools</ObfuscatorToolsPath>
+		<ObfuscatorToolsPath Condition="'$(NuGetProjectStyle)' == 'PackageReference' And !Exists('$(ObfuscatorToolsPath)')">$(NuGetPackageRoot)obfuscar\2.2.38\tools</ObfuscatorToolsPath>
+
+		<ObfuscatorToolsPath Condition="'$(NuGetProjectStyle)' != 'PackageReference' And !Exists('$(ObfuscatorToolsPath)')">$(MSBuildThisFileDirectory)..\..\Obfuscar.2.2.38\tools</ObfuscatorToolsPath>
+		<ObfuscatorToolsPath Condition="'$(NuGetProjectStyle)' != 'PackageReference' And !Exists('$(ObfuscatorToolsPath)')">$(SolutionDir)packages\obfuscar\2.2.38\tools</ObfuscatorToolsPath>
+		<ObfuscatorToolsPath Condition="!Exists('$(ObfuscatorToolsPath)')">d:\dev\obfuscar\2.2.38\tools</ObfuscatorToolsPath>
+
+	</PropertyGroup>
+
+	<PropertyGroup>
+
+		<!-- Obfuscator command -->
+		<ObfuscatorExePath Condition=" '$(ObfuscatorExePath)' == '' ">$(ObfuscatorToolsPath)\Obfuscar.Console.exe</ObfuscatorExePath>
+
+		<ObfuscatorCommand Condition=" '$(OS)' == 'Windows_NT'">"$(ObfuscatorExePath)"</ObfuscatorCommand>
+		<ObfuscatorCommand Condition=" '$(OS)' != 'Windows_NT' ">mono "$(ObfuscatorExePath)"</ObfuscatorCommand>
+
+		<!-- PaddedSolutionDir -->
+		<PaddedSolutionDir Condition=" '$(OS)' == 'Windows_NT'">"$(SolutionDir) "</PaddedSolutionDir>
+		<PaddedSolutionDir Condition=" '$(OS)' != 'Windows_NT' ">"$(SolutionDir)"</PaddedSolutionDir>
+
+		<!-- ProjectFileName -->
+		<ProjectFileName Condition=" '$(OS)' == 'Windows_NT'">$([System.IO.Path]::Combine($(ProjectDir), "$(ProjectName).xml"))</ProjectFileName>
+		<ProjectFileName Condition=" '$(OS)' == 'Windows_NT' AND !Exists('$(ProjectFileName)')">$([System.IO.Path]::Combine($(ProjectDir), "Obfuscar.xml"))</ProjectFileName>
+
+		<ProjectFileName Condition=" '$(OS)' != 'Windows_NT' ">$(ProjectDir)$(ProjectName).xml</ProjectFileName>
+		<ProjectFileName Condition=" '$(OS)' != 'Windows_NT' AND !Exists('$(ProjectFileName)')">$(ProjectDir)Obfuscar.xml</ProjectFileName>
+
+		<!-- Commands -->
+		<ObfuscateCommand>$(ObfuscatorCommand) "$(ProjectFileName)"</ObfuscateCommand>
+		<ObfuscateCommand35>$(ObfuscatorCommand) "Obfuscar35.xml"</ObfuscateCommand35>
+		<ObfuscateCommand60>$(ObfuscatorCommand) "Obfuscar60.xml"</ObfuscateCommand60>
+		<UserSecretsId>60002b35-556b-4d79-ab64-5c410a244d34</UserSecretsId>
+	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net35'">
 		<ProjectReference Include="..\UnityEngine\UnityEngine.csproj" />
@@ -46,11 +83,26 @@
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.CoreModule.dll</HintPath>
 		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+			<HintPath>..\..\libs\Proxies\Unity.TextMeshPro.dll</HintPath>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="UnityEngine.TextCoreModule">
+			<HintPath>..\..\libs\Proxies\UnityEngine.TextCoreModule.dll</HintPath>
+		</Reference>
 		<Reference Include="UnityEngine.TextRenderingModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.TextRenderingModule.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine.InputModule">
+			<HintPath>..\..\libs\Proxies\UnityEngine.InputModule.dll</HintPath>
+		</Reference>
 		<Reference Include="UnityEngine.AssetBundleModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.AssetBundleModule.dll</HintPath>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="UnityEngine.ImageConversion">
+			<HintPath>..\..\libs\Proxies\UnityEngine.ImageConversionModule.dll</HintPath>
+			<SpecificVersion>False</SpecificVersion>
 		</Reference>
 		<Reference Include="UnityEngine.IMGUIModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.IMGUIModule.dll</HintPath>
@@ -62,6 +114,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" PrivateAssets="All" />
+		<PackageReference Include="Obfuscar" Version="2.2.38">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -106,6 +162,14 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Obfuscar60.xml" />
+		<Content Include="Obfuscar35.xml" />
+	</ItemGroup>
+	<Target Name="CheckPrerequisites" AfterTargets="Build">
+		<!-- Raise an error if we're unable to locate Obfuscator.cli.exe  -->
+		<Error Condition="'$(DownloadObfuscatorExe)' != 'true' AND !Exists('$(ObfuscatorExePath)')" Text="Unable to locate '$(ObfuscatorExePath)'" />
+	</Target>
 	<!-- No idea why I need one for each -->
 	<Target Name="ILRepackNET460" AfterTargets="Build" Condition="'$(TargetFramework)'=='net6.0'">
 		<PropertyGroup>
@@ -128,9 +192,26 @@
 		<Message Text="MERGING: @(InputAssemblies)-&gt;'%(Filename)') into $(OutputAssembly)" Importance="High" />
 		<ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).dll" OutputAssembly="$(AssemblyName).dll" InputAssemblies="@(InputAssemblies)" InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" WorkingDirectory="$(WorkingDirectory)" />
 	</Target>
-
+	<Target Name="Obfuscator35" AfterTargets="ILRepackNET35" DependsOnTargets="CheckPrerequisites" Condition="'$(TargetFramework)'=='net35'">
+		<MakeDir Directories="$(TargetDir)obfuscated" />
+		<Exec WorkingDirectory="$(ProjectDir)" Command="$(ObfuscateCommand35)" />
+		<ItemGroup>
+			<FilesToMove Include="$(TargetDir)obfuscated\*.*" />
+		</ItemGroup>
+		<Move SourceFiles="@(FilesToMove)" DestinationFolder="$(TargetDir)" OverwriteReadOnlyFiles="true" Condition=" '$(OS)' == 'Windows_NT'" />
+		<RemoveDir Directories="$(TargetDir)obfuscated" Condition=" '$(OS)' == 'Windows_NT'" />
+	</Target>
+	<Target Name="Obfuscator60" AfterTargets="ILRepackNET460" DependsOnTargets="CheckPrerequisites" Condition="'$(TargetFramework)'=='net6.0'">
+		<MakeDir Directories="$(TargetDir)obfuscated" />
+		<Exec WorkingDirectory="$(ProjectDir)" Command="$(ObfuscateCommand60)" />
+		<ItemGroup>
+			<FilesToMove Include="$(TargetDir)obfuscated\*.*" />
+		</ItemGroup>
+		<Move SourceFiles="@(FilesToMove)" DestinationFolder="$(TargetDir)" OverwriteReadOnlyFiles="true" Condition=" '$(OS)' == 'Windows_NT'" />
+		<RemoveDir Directories="$(TargetDir)obfuscated" Condition=" '$(OS)' == 'Windows_NT'" />
+	</Target>
 	<!-- PostBuildEvent -->
-	<Target Name="PostBuildNET35" AfterTargets="ILRepackNET35" Condition="'$(TargetFramework)'=='net35'">
+	<Target Name="PostBuildNET35" AfterTargets="Obfuscator35" Condition="'$(TargetFramework)'=='net35'">
 		<GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
 			<Output TaskParameter="Assemblies" ItemName="Targets" />
 		</GetAssemblyIdentity>
@@ -140,7 +221,7 @@
 		<Exec Command="if $(ConfigurationName) == Release (&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.AutoTranslator.Plugin.Core.dll&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.AutoTranslator.Plugin.Core.xml&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.AutoTranslator.Plugin.Core.pdb&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.AutoTranslator.Plugin.ExtProtocol.dll&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.AutoTranslator.Plugin.ExtProtocol.xml&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.AutoTranslator.Plugin.ExtProtocol.pdb&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.Common.dll&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.Common.xml&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.Common.pdb&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.ResourceRedirector.dll&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.ResourceRedirector.xml&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   XCOPY /Y /I &quot;$(TargetDir)XUnity.ResourceRedirector.pdb&quot; &quot;$(SolutionDir)dist\Developer\Developer\&quot;&#xD;&#xA;   COPY /Y &quot;$(SolutionDir)README.md&quot; &quot;$(SolutionDir)dist\Developer\Developer\README (AutoTranslator).md&quot;&#xD;&#xA;   &quot;$(SolutionDir)tools\xzip.exe&quot; &quot;$(SolutionDir)dist\Developer&quot; &quot;$(SolutionDir)dist\XUnity.AutoTranslator-Developer-@(VersionNumber).zip&quot;&#xD;&#xA;)" />
 	</Target>
 
-	<Target Name="PostBuildNET472" AfterTargets="ILRepackNET460" Condition="'$(TargetFramework)'=='net6.0'">
+	<Target Name="PostBuildNET472" AfterTargets="Obfuscator60" Condition="'$(TargetFramework)'=='net6.0'">
 		<GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
 			<Output TaskParameter="Assemblies" ItemName="Targets" />
 		</GetAssemblyIdentity>
