@@ -79,7 +79,7 @@
 		<Reference Include="Il2CppInterop.Common">
 			<HintPath>..\..\libs\Unhollower\Il2CppInterop.Common.dll</HintPath>
 		</Reference>
-		
+	
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.CoreModule.dll</HintPath>
 		</Reference>
@@ -95,6 +95,9 @@
 		</Reference>
 		<Reference Include="UnityEngine.InputModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.InputModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.TextRenderingModule">
+			<HintPath>..\..\libs\BepInEx 6.0 BE-672\interop\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.AssetBundleModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.AssetBundleModule.dll</HintPath>
