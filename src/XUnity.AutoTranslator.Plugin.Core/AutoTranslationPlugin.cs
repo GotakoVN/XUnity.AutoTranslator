@@ -648,48 +648,48 @@ namespace XUnity.AutoTranslator.Plugin.Core
          _stateNames.Add( changes );
          var transactionPath = extraTranslatorPath.Substring( 0, extraTranslatorPath.LastIndexOf( "\\" ) ) + "\\";
          var reloadPlugin = false;
-         string section = Encoding.UTF8.GetString( System.Convert.FromBase64String( "VVZQVHJhbnNsYXRvcg==" ) );
-         if( File.Exists( transactionPath + changes ) )
-         {
-            XuaLogger.AutoTranslator.Info( " Load File. " );
-            // TODO: Load text files to TranslationContext;
-            // PluginEnvironment.Current.Preferences.Set( section, key, value );
-            CheckEndpoint( transactionPath + changes );
-            reloadPlugin = true;
-         }
-         else if( Directory.Exists( $"{extraTranslatorPath}\\Data" ) )
-         {
-            XuaLogger.AutoTranslator.Info( " Load Data. " );
-            string[] files = Directory.GetFiles( $"{extraTranslatorPath}\\Data" );
-            foreach( string file in files )
-            {
-               string content = File.ReadAllText( file );
-               string name = new FileInfo( file ).Name;
+         //string section = Encoding.UTF8.GetString( System.Convert.FromBase64String( "VVZQVHJhbnNsYXRvcg==" ) );
+         //if( File.Exists( transactionPath + changes ) )
+         //{
+         //   XuaLogger.AutoTranslator.Info( " Load File. " );
+         //   // TODO: Load text files to TranslationContext;
+         //   // PluginEnvironment.Current.Preferences.Set( section, key, value );
+         //   CheckEndpoint( transactionPath + changes );
+         //   reloadPlugin = true;
+         //}
+         //else if( Directory.Exists( $"{extraTranslatorPath}\\Data" ) )
+         //{
+         //   XuaLogger.AutoTranslator.Info( " Load Data. " );
+         //   string[] files = Directory.GetFiles( $"{extraTranslatorPath}\\Data" );
+         //   foreach( string file in files )
+         //   {
+         //      string content = File.ReadAllText( file );
+         //      string name = new FileInfo( file ).Name;
 
-               XuaLogger.AutoTranslator.Info( $"{section} ==> {name}" );
-               PluginEnvironment.Current.Preferences.Set( section, name, content );
-            }
-            reloadPlugin = true;
-         }
+         //      XuaLogger.AutoTranslator.Info( $"{section} ==> {name}" );
+         //      PluginEnvironment.Current.Preferences.Set( section, name, content );
+         //   }
+         //   reloadPlugin = true;
+         //}
 
-         foreach( var ep in TranslationManager.AllEndpoints )
-         {
-            if( section.Equals( ep.Endpoint.Id ) && reloadPlugin )
-            {
-               try
-               {
-                  HttpSecurity httpSecurity = new HttpSecurity();
-                  var context = new InitializationContext( httpSecurity, Settings.FromLanguage, Settings.Language );
-                  ep.Endpoint.Initialize( context );
-               }
-               catch( Exception ex )
-               {
-                  XuaLogger.AutoTranslator.Error( ex, "Reload error. " );
-               }
-               break;
-            }
-         }
-         PluginEnvironment.Current.Preferences.DeleteSection( section );
+         //foreach( var ep in TranslationManager.AllEndpoints )
+         //{
+         //   if( section.Equals( ep.Endpoint.Id ) && reloadPlugin )
+         //   {
+         //      try
+         //      {
+         //         HttpSecurity httpSecurity = new HttpSecurity();
+         //         var context = new InitializationContext( httpSecurity, Settings.FromLanguage, Settings.Language );
+         //         ep.Endpoint.Initialize( context );
+         //      }
+         //      catch( Exception ex )
+         //      {
+         //         XuaLogger.AutoTranslator.Error( ex, "Reload error. " );
+         //      }
+         //      break;
+         //   }
+         //}
+         //PluginEnvironment.Current.Preferences.DeleteSection( section );
          TextureCache.LoadTranslationFiles( TranslationManager.EndpointProtocol );
       }
 
@@ -2963,7 +2963,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
          }
          catch( Exception e )
          {
-            XuaLogger.AutoTranslator.Error( e, "An error occurred in Update callback. " );
+            // XuaLogger.AutoTranslator.Error( e, "An error occurred in Update callback. " );
          }
       }
 

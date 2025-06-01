@@ -22,7 +22,7 @@ namespace UVPTranslator
 
       public void Initialize( IInitializationContext context )
       {
-         TranslateCenter.AssemblyDirectory = context.TranslatorDirectory;
+         // TranslateCenter.AssemblyDirectory = context.TranslatorDirectory;
          TranslateCenter.Init( context );
          initialized = true;
       }

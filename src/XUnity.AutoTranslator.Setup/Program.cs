@@ -71,6 +71,8 @@ namespace XUnity.AutoTranslator.Setup
             AddFile( Path.Combine( translatorsPath, "YandexTranslate.dll" ), Resources.YandexTranslate, true );
             AddFile( Path.Combine( translatorsPath, "PapagoTranslate.dll" ), Resources.PapagoTranslate, true );
             AddFile( Path.Combine( translatorsPath, "LingoCloudTranslate.dll" ), Resources.LingoCloudTranslate, true );
+            AddFile( Path.Combine( translatorsPath, "UVPTranslator.dll" ), Resources.UVPTranslator, true );
+            AddFile( Path.Combine( translatorsPath, "INIFileParser.dll" ), Resources.INIFileParser, true );
             AddFile( Path.Combine( fullNetPath, "XUnity.AutoTranslator.Plugin.ExtProtocol.dll" ), Resources.XUnity_AutoTranslator_Plugin_ExtProtocol, true );
             AddFile( Path.Combine( fullNetPath, "Lec.ExtProtocol.exe" ), Resources.Lec_ExtProtocol, true );
             AddFile( Path.Combine( fullNetPath, "ezTransXP.ExtProtocol.exe" ), Resources.ezTransXP_ExtProtocol, true );
@@ -80,6 +82,7 @@ namespace XUnity.AutoTranslator.Setup
             AddFile( Path.Combine( fullNetPath, "Http.ExtProtocol.dll" ), Resources.Http_ExtProtocol, true );
             AddFile( Path.Combine( fullNetPath, "Common.ExtProtocol.Executor.exe" ), Resources.Common_ExtProtocol_Executor, true );
             AddFile( Path.Combine( fullNetPath, "Newtonsoft.Json.dll" ), Resources.Newtonsoft_Json, true );
+            
 
             // create an .ini file for each launcher, if it does not already exist
             var iniInfo = new FileInfo( Path.Combine( reiPath, Path.GetFileNameWithoutExtension( launcher.Executable.Name ) + ".ini" ) );

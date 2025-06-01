@@ -94,9 +94,14 @@ namespace XUnity.Common.Constants
       public static readonly TypeContainer TMP_FontAsset = FindType( "TMPro.TMP_FontAsset" );
       public static readonly TypeContainer TMP_Settings = FindType( "TMPro.TMP_Settings" );
 
+      // SuperTextMesh
+      public static readonly TypeContainer SuperTextMesh = FindType( "SuperTextMesh" );
+
       // Unity
       public static readonly TypeContainer GameObject = FindType( "UnityEngine.GameObject" );
       public static readonly TypeContainer Transform = FindType( "UnityEngine.Transform" );
+      public static readonly TypeContainer RectTransform = FindType( "UnityEngine.RectTransform" );
+      public static readonly TypeContainer Vector2 = FindType( "UnityEngine.Vector2" );
       public static readonly TypeContainer TextMesh = FindType( "UnityEngine.TextMesh" );
       public static readonly TypeContainer Text = FindType( "UnityEngine.UI.Text" );
       public static readonly TypeContainer Image = FindType( "UnityEngine.UI.Image" );
@@ -142,6 +147,7 @@ namespace XUnity.Common.Constants
 
       // Something...
       public static readonly TypeContainer Typewriter = FindType( "Typewriter" );
+
 
       // Utage
       public static readonly TypeContainer UguiNovelText = FindType( "Utage.UguiNovelText" );
@@ -260,6 +266,15 @@ namespace XUnity.Common.Constants
          public static CachedProperty Placeholder = UnityTypes.TMP_InputField?.ClrType.CachedProperty( "placeholder" );
       }
 
+      public static class SuperTextMesh_Fields
+      {
+         public static CachedField Font = UnityTypes.SuperTextMesh?.ClrType.CachedField( "font" );
+      }
+      public static class SuperTextMesh_Properties
+      {
+         public static CachedProperty Text = UnityTypes.SuperTextMesh?.ClrType.CachedProperty( "text" );
+      }
+
       public static class Font_Properties
       {
          public static CachedProperty FontSize = UnityTypes.Font?.ClrType.CachedProperty( "fontSize" );
@@ -287,6 +302,14 @@ namespace XUnity.Common.Constants
          public static CachedMethod SkipTypeWriter = UnityTypes.TextExpansion?.ClrType.CachedMethod( "SkipTypeWriter" );
       }
 
+      public static class Transform_Properties
+      {
+#if MANAGED
+         public static CachedProperty Parent = UnityTypes.Transform?.ClrType.CachedProperty( "parent" );
+         public static CachedProperty GameObject = UnityTypes.Transform?.ClrType.CachedProperty( "gameObject" );
+#endif
+      }
+
       public static class GameObject_Methods
       {
 #if IL2CPP
@@ -294,6 +317,24 @@ namespace XUnity.Common.Constants
          {
             public static readonly IntPtr SetActive = Il2CppUtilities.GetIl2CppMethod( UnityTypes.GameObject?.ClassPointer, "SetActive", typeof( void ), typeof( bool ) );
          }
+#endif
+#if MANAGED
+         public static CachedMethod GetComponent = UnityTypes.GameObject?.ClrType.CachedMethod( "GetComponent", typeof(Type) );
+#endif
+      }
+
+      public static class RectTransform_Properties
+      {
+#if MANAGED
+         public static CachedProperty SizeDelta = UnityTypes.RectTransform?.ClrType.CachedProperty( "sizeDelta" );
+         public static CachedProperty LocalPosition = UnityTypes.RectTransform?.ClrType.CachedProperty( "localPosition" );
+#endif
+      }
+      public static class Vector2_Fields
+      {
+#if MANAGED
+         public static CachedField X = UnityTypes.Vector2?.ClrType.CachedField( "x" );
+         public static CachedField Y = UnityTypes.Vector2?.ClrType.CachedField( "y" );
 #endif
       }
 
@@ -366,13 +407,15 @@ namespace XUnity.Common.Constants
       public static class GameObject_Properties
       {
          public static CachedProperty Name = UnityTypes.GameObject?.ClrType.CachedProperty( "name" );
+#if MANAGED
+         public static CachedProperty Transform = UnityTypes.GameObject?.ClrType.CachedProperty( "transform" );
+#endif
       }
 
       public static class TextMeshProUGUI_Properties
       {
          public static CachedProperty Text = UnityTypes.TMP_Text?.ClrType.CachedProperty( "text" );
          public static CachedProperty GameObject = UnityTypes.TextMeshProUGUI?.ClrType.CachedProperty( "gameObject" );
-
       }
 
       public static class TextMeshProUGUI_Methods
@@ -383,6 +426,11 @@ namespace XUnity.Common.Constants
             public static readonly IntPtr OnEnable = Il2CppUtilities.GetIl2CppMethod( UnityTypes.TextMeshProUGUI?.ClassPointer, "OnEnable", typeof( void ) );
          }
 #endif
+      }
+
+      public static class SuperTextMesh_Methods
+      {
+
       }
 
       public static class UILabel_Methods
@@ -592,7 +640,7 @@ namespace XUnity.Common.Constants
          return null;
       }
 #else
-      private static TypeContainer FindType( string name )
+      public static TypeContainer FindType( string name )
       {
          var assemblies = AppDomain.CurrentDomain.GetAssemblies();
          foreach( var assembly in assemblies )

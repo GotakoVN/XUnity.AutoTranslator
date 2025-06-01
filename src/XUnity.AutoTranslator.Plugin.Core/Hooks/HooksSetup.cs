@@ -8,6 +8,9 @@ using UnityEngine;
 using XUnity.AutoTranslator.Plugin.Core.Configuration;
 using XUnity.AutoTranslator.Plugin.Core.Constants;
 using XUnity.AutoTranslator.Plugin.Core.Extensions;
+#if MANAGED
+using XUnity.AutoTranslator.Plugin.Core.Hooks.Managed;
+#endif
 using XUnity.AutoTranslator.Plugin.Core.Hooks.NGUI;
 using XUnity.AutoTranslator.Plugin.Core.Hooks.TextMeshPro;
 using XUnity.AutoTranslator.Plugin.Core.Hooks.UGUI;
@@ -179,6 +182,19 @@ namespace XUnity.AutoTranslator.Plugin.Core.Hooks
          catch( Exception e )
          {
             XuaLogger.AutoTranslator.Error( e, "An error occurred while setting up hooks for FairyGUI." );
+         }
+         try
+         {
+            if( Settings.EnableSuperTextMesh )
+            {
+#if MANAGED
+               HookingHelper.PatchAll( SuperTextMeshHooks.All, Settings.ForceMonoModHooks );
+#endif
+            }
+         }
+         catch( Exception e )
+         {
+            XuaLogger.AutoTranslator.Error( e, "An error occurred while setting up hooks for SuperTextMeshHooks." );
          }
       }
 

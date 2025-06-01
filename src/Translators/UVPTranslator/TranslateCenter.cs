@@ -66,16 +66,16 @@ namespace UVPTranslator
         public static Dictionary<int, Dictionary<string, string>> translateMap = new Dictionary<int, Dictionary<string, string>>();
         public static bool CanWork { get; set; } = true;
 
-        public static string AssemblyDirectory { get; set; }
-        //{
-        //    get
-        //    {
-        //        string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-        //UriBuilder uri = new UriBuilder(codeBase);
-        //string path = Uri.UnescapeDataString(uri.Path);
-        //        return Path.GetDirectoryName(path);
-        //    }
-        //}
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+      UriBuilder uri = new UriBuilder( codeBase );
+      string path = Uri.UnescapeDataString( uri.Path );
+                return Path.GetDirectoryName(path);
+            }
+        }
         public static void Init( XUnity.AutoTranslator.Plugin.Core.Endpoints.IInitializationContext context )
         {
             ChinesePhienAmWords = new Dictionary<string, string>();
@@ -83,14 +83,14 @@ namespace UVPTranslator
             ThanhNgu = new Dictionary<string, string>();
             VietPhrase = new Dictionary<string, string>();
             LuatNhan = new Dictionary<string, string>();
-            ReadInitFile(context.GetOrCreateSetting<string>("UVPTranslator","TranslateTool.ini"));
+            ReadInitFile(File.ReadAllText($"{AssemblyDirectory}\\Data\\TranslateTool.ini"));
             if (CanWork)
             {
-                ReadFileToList(ChinesePhienAmWords, context.GetOrCreateSetting<string>( "UVPTranslator", "ChinesePhienAmWords.txt" ), "ChinesePhienAmWords.txt");
-                ReadFileToList(Names, context.GetOrCreateSetting<string>( "UVPTranslator", "Names.txt" ), "Names.txt");
-                ReadFileToList(ThanhNgu, context.GetOrCreateSetting<string>( "UVPTranslator", "ThanhNgu.txt" ), "ThanhNgu.txt");
-                ReadFileToList(VietPhrase, context.GetOrCreateSetting<string>( "UVPTranslator", "VietPhrase.txt" ), "VietPhrase.txt");
-                ReadTextRegExToList(LuatNhan, context.GetOrCreateSetting<string>( "UVPTranslator", "LuatNhan.txt" ), "LuatNhan.txt" );
+                ReadFileToList(ChinesePhienAmWords, File.ReadAllText( $"{AssemblyDirectory}\\Data\\ChinesePhienAmWords.txt" ), "ChinesePhienAmWords.txt");
+                ReadFileToList(Names, File.ReadAllText( $"{AssemblyDirectory}\\Data\\Names.txt" ), "Names.txt");
+                ReadFileToList(ThanhNgu, File.ReadAllText( $"{AssemblyDirectory}\\Data\\ThanhNgu.txt" ), "ThanhNgu.txt");
+                ReadFileToList(VietPhrase, File.ReadAllText( $"{AssemblyDirectory}\\Data\\VietPhrase.txt" ), "VietPhrase.txt");
+                ReadTextRegExToList(LuatNhan, File.ReadAllText( $"{AssemblyDirectory}\\Data\\LuatNhan.txt" ), "LuatNhan.txt" );
                 translateMap[0] = Names;
                 translateMap[1] = VietPhrase;
                 translateMap[2] = LuatNhan;
@@ -202,7 +202,8 @@ namespace UVPTranslator
                   translateMap[ ChinesePhienAmWordsOrder ] = ChinesePhienAmWords;
                }
             }
-            XuaLogger.AutoTranslator.Info( $"Read ini OK !!!" );
+            CanWork = true;
+            XuaLogger.AutoTranslator.Info( $"Load ini OK !!!" );
         }
 
         private static bool IsOK(params int[] intToChecks)

@@ -57,6 +57,37 @@ namespace XUnity.AutoTranslator.Plugin.Core
 
             }
          }
+         /*
+          * else if (fileName.Equals( "UnityExplorer.STANDALONE.Mono.dll" ) || fileName.Equals( "UniverseLib.Mono.dll" ) )
+            {
+               list.Add ( file );
+            }
+         */
+#if MANAGED
+         string unityExplorer = $"{managePath}/UnityExplorer.STANDALONE.Mono.dll";
+         if( File.Exists( unityExplorer ) )
+         {
+            try
+            {
+               var mono = LoadAssembly( $"{managePath}/UniverseLib.Mono.dll" );
+               var dll = LoadAssembly( unityExplorer );
+               var dllType = dll.GetType( "UnityExplorer.ExplorerStandalone" );
+               var instance = System.Activator.CreateInstance( dllType );
+               var dllMethod = dllType.GetMethods().FirstOrDefault( m => m.Name == "CreateInstance" && m.GetParameters().Count() == 0 );
+               dllMethod.Invoke( instance, null);
+            }
+            catch( Exception ex )
+            {
+               XuaLogger.AutoTranslator.Info( $"UnityExplorer.ExplorerStandalone - Error: {ex.Source} {ex.Message} ");
+               XuaLogger.AutoTranslator.Info( "UnityExplorer-Error:" + ex.StackTrace );
+               if (ex.InnerException != null )
+               {
+                  XuaLogger.AutoTranslator.Info( $"InnerError: {ex.InnerException.Source} {ex.InnerException.Message} " );
+                  XuaLogger.AutoTranslator.Info( "InnerError:" + ex.InnerException.StackTrace );
+               }
+            }
+         }
+#endif
       }
 
       private void CallInitMethod( Type typeItem )

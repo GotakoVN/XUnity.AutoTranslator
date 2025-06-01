@@ -91,6 +91,7 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
       public static bool EnableTextMeshPro;
       public static bool EnableTextMesh;
       public static bool EnableFairyGUI;
+      public static bool EnableSuperTextMesh;
       public static bool InitializeHarmonyDetourBridge;
       public static bool IgnoreWhitespaceInDialogue;
       public static int MinDialogueChars;
@@ -142,6 +143,8 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
       public static string SkipFontChangeNames;
       public static bool DebugControlName;
       public static bool EnableReiLogging;
+      public static string SkipFontNames;
+      public static string SkipParentControls;
 
       public static string TextureDirectory;
       public static bool EnableTextureTranslation;
@@ -171,6 +174,7 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
       public static bool CopyToClipboard;
       public static int MaxClipboardCopyCharacters;
       public static float ClipboardDebounceTime;
+      
 
       public static void Configure()
       {
@@ -239,6 +243,7 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
             EnableTextMeshPro = PluginEnvironment.Current.Preferences.GetOrDefault( "TextFrameworks", "EnableTextMeshPro", true );
             EnableTextMesh = PluginEnvironment.Current.Preferences.GetOrDefault( "TextFrameworks", "EnableTextMesh", false );
             EnableFairyGUI = PluginEnvironment.Current.Preferences.GetOrDefault( "TextFrameworks", "EnableFairyGUI", true );
+            EnableSuperTextMesh = PluginEnvironment.Current.Preferences.GetOrDefault( "TextFrameworks", "EnableSuperTextMesh", false );
 
             MaxCharactersPerTranslation = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "MaxCharactersPerTranslation", 200 );
             IgnoreWhitespaceInDialogue = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "IgnoreWhitespaceInDialogue", true );
@@ -296,6 +301,8 @@ namespace XUnity.AutoTranslator.Plugin.Core.Configuration
             OverrideFontWithFirstAvailable = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "OverrideFontWithFirstAvailable", true );
             SuspendFontChanging = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "SuspendFontChanging", false );
             SkipFontChangeNames = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "SkipFontChangeNames", "DamageFont,comboText" );
+            SkipFontNames = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "SkipFontNames", "MiSans-Heavy SDF" );
+            SkipParentControls = PluginEnvironment.Current.Preferences.GetOrDefault( "Behaviour", "SkipParentControls", "" );
             DebugControlName = PluginEnvironment.Current.Preferences.GetOrDefault( "General", "DebugControlName", false );
 
             TextureDirectory = PluginEnvironment.Current.Preferences.GetOrDefault( "Texture", "TextureDirectory", Path.Combine( "Translation", Path.Combine( "{Lang}", "Texture" ) ) );

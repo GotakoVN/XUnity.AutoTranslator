@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using UnityEngine;
 using XUnity.AutoTranslator.Plugin.Core.Configuration;
 using XUnity.AutoTranslator.Plugin.Core.Extensions;
@@ -170,6 +171,7 @@ namespace XUnity.AutoTranslator.Plugin.Core
                   }
                   if( shouldReturn ) { return; }
                }
+               
             }
             catch( Exception ex )
             {
@@ -197,6 +199,35 @@ namespace XUnity.AutoTranslator.Plugin.Core
             var newFont = FontCache.GetOrCreateOverrideFontTextMeshPro();
             // if( newFont == null || previousFont == null ) return;
             if( newFont == null ) return;
+            var fontNameField = clrType.CachedField( "name" );
+            string previousFontNameValue = (string)fontNameField.Get( previousFont );
+            string newFontValue = (string)fontNameField.Get( newFont );
+            try
+            {
+               if( Settings.DebugControlName )
+               {
+                  XuaLogger.AutoTranslator.Info( $"Unity.TMPro: previousFontNameValue {previousFontNameValue}: Change newFontValue {newFontValue}" );
+               }
+            }
+            finally
+            {
+
+            }
+            
+            if( !string.IsNullOrEmpty( Settings.SkipFontNames ) )
+            {
+               string[] splitNames = Settings.SkipFontNames.Split( ',' );
+               bool shouldReturn = false;
+               foreach( var splitName in splitNames )
+               {
+                  if( splitName.Trim().Equals( previousFontNameValue ) )
+                  {
+                     shouldReturn = true;
+                     break;
+                  }
+               }
+               if( shouldReturn ) { return; }
+            }
 
             if( !UnityObjectReferenceComparer.Default.Equals( newFont, previousFont ) )
             {
@@ -232,6 +263,20 @@ namespace XUnity.AutoTranslator.Plugin.Core
                   fontProperty.Set( obj, previousFont );
                   fontMaterialProperty.Set( obj, oldMaterial );
                };
+               try
+               {
+                  //var fontMaterialField = clrType.CachedField( "fontMaterial" );
+                  //var material = clrType.CachedField( "material" );
+                  //var materialValue = material.Get( newFont );
+                  //if (materialValue != null )
+                  //{
+                  //   fontMaterialField.Set( ui, material );
+                  //}
+               }
+               catch( Exception ex )
+               {
+
+               }
             }
 
             if( Settings.DebugControlName )
@@ -269,10 +314,46 @@ namespace XUnity.AutoTranslator.Plugin.Core
                   PrintDebugControlLog( ui, "" );
                   XuaLogger.AutoTranslator.Info( "UILabel cannot print fontSize" );
                }
+               
             }
             catch( Exception ex )
             {
                XuaLogger.AutoTranslator.Info( ex, "Error when doing work on UILabel" );
+            }
+         }
+         else if( UnityTypes.SuperTextMesh != null && UnityTypes.SuperTextMesh.IsAssignableFrom( type ) )
+         {
+            if( string.IsNullOrEmpty( Settings.OverrideFont ) ) return;
+            try
+            {
+               var fontField = UnityTypes.SuperTextMesh_Fields.Font;
+               if( fontField == null ) return;
+               var previousFont = (Font)fontField.Get( ui );
+               var Font_fontSizeProperty = UnityTypes.Font_Properties.FontSize;
+               if( previousFont == null ) return;
+               if( previousFont.name.Trim().Equals( Settings.OverrideFont.Trim() ) ) return;
+               var newFont = FontCache.GetOrCreate( (int)Font_fontSizeProperty?.Get( previousFont ) );
+               if( newFont == null ) return;
+               if( newFont.name.Equals( previousFont.name ) ) return;
+
+               if( !UnityObjectReferenceComparer.Default.Equals( newFont, previousFont ) )
+               {
+                  fontField.Set( ui, newFont );
+                  _unfont = obj =>
+                  {
+                     fontField.Set( obj, previousFont );
+                  };
+               }
+
+               if( Settings.DebugControlName )
+               {
+                  PrintDebugControlLog( ui, "" );
+                  XuaLogger.AutoTranslator.Info( "SuperTextMesh cannot print fontSize" );
+               }
+            }
+            catch( Exception ex )
+            {
+               XuaLogger.AutoTranslator.Info( ex, "Error when doing work on SuperTextMesh" );
             }
          }
       }

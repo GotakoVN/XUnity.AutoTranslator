@@ -19,7 +19,7 @@ namespace XUnity.AutoTranslator.Setup.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -233,6 +233,16 @@ namespace XUnity.AutoTranslator.Setup.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] INIFileParser {
+            get {
+                object obj = ResourceManager.GetObject("INIFileParser", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Lec_ExtProtocol {
             get {
                 object obj = ResourceManager.GetObject("Lec_ExtProtocol", resourceCulture);
@@ -246,6 +256,16 @@ namespace XUnity.AutoTranslator.Setup.Properties {
         internal static byte[] LecPowerTranslator15 {
             get {
                 object obj = ResourceManager.GetObject("LecPowerTranslator15", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LingoCloudTranslate {
+            get {
+                object obj = ResourceManager.GetObject("LingoCloudTranslate", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -349,23 +369,23 @@ namespace XUnity.AutoTranslator.Setup.Properties {
                 return ((byte[])(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LingoCloudTranslate{
-            get{
-                object obj = ResourceManager.GetObject("LingoCloudTranslate", resourceCulture);
+        internal static byte[] ReiPatcher {
+            get {
+                object obj = ResourceManager.GetObject("ReiPatcher", resourceCulture);
                 return ((byte[])(obj));
             }
         }
-
-      /// <summary>
-      ///   Looks up a localized resource of type System.Byte[].
-      /// </summary>
-      internal static byte[] ReiPatcher {
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] UVPTranslator {
             get {
-                object obj = ResourceManager.GetObject("ReiPatcher", resourceCulture);
+                object obj = ResourceManager.GetObject("UVPTranslator", resourceCulture);
                 return ((byte[])(obj));
             }
         }

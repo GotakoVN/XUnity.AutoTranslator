@@ -81,7 +81,7 @@
 		</Reference>
 	
 		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>..\..\libs\Proxies\UnityEngine.CoreModule.dll</HintPath>
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.CoreModule.dll</HintPath>
 		</Reference>
 		<Reference Include="Unity.TextMeshPro">
 			<HintPath>..\..\libs\Proxies\Unity.TextMeshPro.dll</HintPath>
@@ -95,12 +95,16 @@
 		</Reference>
 		<Reference Include="UnityEngine.InputModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.InputModule.dll</HintPath>
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.TextRenderingModule.dll</HintPath>
 		</Reference>
-		<Reference Include="UnityEngine.TextRenderingModule">
-			<HintPath>..\..\libs\BepInEx 6.0 BE-672\interop\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+		<Reference Include="UnityEngine.InputModule">
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.InputModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.InputLegacyModule">
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.InputLegacyModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.AssetBundleModule">
-			<HintPath>..\..\libs\Proxies\UnityEngine.AssetBundleModule.dll</HintPath>
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.AssetBundleModule.dll</HintPath>
 			<SpecificVersion>False</SpecificVersion>
 		</Reference>
 		<Reference Include="UnityEngine.ImageConversion">
@@ -108,11 +112,23 @@
 			<SpecificVersion>False</SpecificVersion>
 		</Reference>
 		<Reference Include="UnityEngine.IMGUIModule">
-			<HintPath>..\..\libs\Proxies\UnityEngine.IMGUIModule.dll</HintPath>
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.IMGUIModule.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\Unity.TextMeshPro.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.TextCoreModule">
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.TextCoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UnityWebRequestModule">
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.UnityWebRequestModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.UnityWebRequestWWWModule">
 			<HintPath>..\..\libs\Proxies\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
 		</Reference>
+			<HintPath>..\..\libs\branches\wulinsh\Proxy_2020.3\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+		</Reference>
+		
 	</ItemGroup>
 
 	<ItemGroup>
