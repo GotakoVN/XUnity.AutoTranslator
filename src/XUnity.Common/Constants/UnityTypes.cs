@@ -24,7 +24,8 @@ namespace XUnity.Common.Constants
       private static bool _initialized;
       private static readonly HashSet<string> Blacklist = new HashSet<string>( StringComparer.OrdinalIgnoreCase )
       {
-         "netstandard.dll"
+         "netstandard.dll",
+         "Il2Cppnetstandard.dll"
       };
 
       private static void Initialize()
@@ -570,14 +571,16 @@ namespace XUnity.Common.Constants
                }
             }
 
-            if( wrapperType != null && ptr == IntPtr.Zero )
-            {
-               XuaLogger.AutoTranslator.Warn( "Could not find '" + name + "' in IL2CPP domain even though it could be found in the managed domain." );
-            }
-
             if( wrapperType != null )
             {
-               return new TypeContainer( ptr != IntPtr.Zero ? Il2CppType.TypeFromPointer( ptr ) : null, wrapperType, ptr );
+               var nativeType = ptr != IntPtr.Zero ? Il2CppType.TypeFromPointer( ptr ) : Il2CppType.From( wrapperType );
+
+               if (nativeType == null)
+               {    
+                  XuaLogger.AutoTranslator.Warn( "Could not find '" + name + "' in IL2CPP domain even though it could be found in the managed domain." );
+               }
+
+               return new TypeContainer( nativeType, wrapperType, ptr );
             }
          }
          catch( Exception e )

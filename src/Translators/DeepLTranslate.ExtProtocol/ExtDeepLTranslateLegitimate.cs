@@ -93,7 +93,7 @@ namespace DeepLTranslate.ExtProtocol
          _handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
          _client = new HttpClient( _handler, true );
-         _client.DefaultRequestHeaders.UserAgent.Add( new ProductInfoHeaderValue( "XUnity", "5.3.0" ) );
+         _client.DefaultRequestHeaders.UserAgent.Add( new ProductInfoHeaderValue( "XUnity", GeneratedInfo.PROJECT_VERSION ) );
          _client.DefaultRequestHeaders.Accept.Add( new MediaTypeWithQualityHeaderValue( "*/*" ) );
       }
 
@@ -115,7 +115,9 @@ namespace DeepLTranslate.ExtProtocol
 
          var parameters = new List<KeyValuePair<string, string>>();
          parameters.Add( new KeyValuePair<string, string>( "auth_key", _apiKey ) );
-         parameters.Add( new KeyValuePair<string, string>( "source_lang", FixLanguage( context.SourceLanguage ).ToUpperInvariant() ) );
+         if( !string.Equals(context.SourceLanguage, "auto", StringComparison.OrdinalIgnoreCase) ) {
+            parameters.Add( new KeyValuePair<string, string>( "source_lang", FixLanguage( context.SourceLanguage ).ToUpperInvariant() ) );
+         }
          parameters.Add( new KeyValuePair<string, string>( "target_lang", FixLanguage( context.DestinationLanguage ).ToUpperInvariant() ) );
          parameters.Add( new KeyValuePair<string, string>( "split_sentences", "1" ) );
 

@@ -1,4 +1,36 @@
-﻿### 5.3.0
+﻿### 5.4.5
+* FEATURE - Add basic resizer support for NGUI
+
+### 5.4.4
+* BUG FIX - Add NGUI support to TextGetterCompatibilityMode
+* BUG FIX - Fix potential assembly comparison issue in TextGetterCompatModeHelper
+* BUG FIX - Fix broken Assembly-CSharp-firstpass detection in CallOrigin
+
+### 5.4.3
+* FEATURE - CustomTranslateEndpoint - Add EnableShortDelay and DisableSpamChecks settings
+* BUG FIX - Fix `minor regex performance improvement` breaking in some games
+
+### 5.4.2
+ * FEATURE - Translation scoping - if GetScopeFromComponent fails, use GetActiveSceneId instead of -1                
+ * BUG FIX - Make config accessible on Android
+ * BUG FIX - Make paths OS-independent in the MelonMod version
+ * MISC - Minor regex performance improvement
+ * MISC - Move XZipper from DotNetZip to SharpCompress
+
+### 5.4.1
+ * BUG FIX - Fix change font crash when previous font is null
+
+### 5.4.0
+ * FEATURE - Keep the outline style when overriding TextMeshPro Font
+ * BUG FIX - Update to BepInEx 6.0 BE-704 to fix some IL2CPP crashes
+ * BUG FIX - Fix failing to get some Il2CppTypes silently and crashing later
+ * BUG FIX - Update DeepL supported languages
+
+### 5.3.1
+ * BUG FIX - Various bugfixes and minor improvemnents to the IL2CPP build
+ * BUG FIX - Various bugfixes to the DeepL endpoint
+
+### 5.3.0
  * FEATURE - Added support for latest MelonLoader and BepInEx bleeding edge builds (only for IL2CPP, use stable release for Mono), also dropped support for earlier versions!
  * FEATURE - Added 'PersistRichTextMode' to allow control over how text that is parsed as rich text during translation is persisted
  * REGRESSION - Dropped support for pre-2017 Unity Engine versions for IL2CPP versions due to problems with new IL2CPP interop (may be re-added later)
