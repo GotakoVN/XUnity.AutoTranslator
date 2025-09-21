@@ -14,9 +14,9 @@ namespace UVPTranslator
 
       public string FriendlyName => "UVPTranslator by 3D2T";
 
-      public int MaxConcurrency => 3;
+      public int MaxConcurrency => 1;
 
-      public int MaxTranslationsPerRequest => 30;
+      public int MaxTranslationsPerRequest => 5;
 
       private bool initialized = false;
 

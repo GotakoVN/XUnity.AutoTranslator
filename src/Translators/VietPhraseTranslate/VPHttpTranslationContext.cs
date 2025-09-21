@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using XUnity.AutoTranslator.Plugin.Core.Endpoints;
+using XUnity.AutoTranslator.Plugin.Core.Endpoints.Http;
 using XUnity.AutoTranslator.Plugin.Core.Web;
 
-namespace XUnity.AutoTranslator.Plugin.Core.Endpoints.Http
+namespace VietphraseTranslate
 {
-   internal class HttpTranslationContext : IHttpTranslationContext, IHttpRequestCreationContext, IHttpResponseInspectionContext, IHttpTranslationExtractionContext
+   internal class VPHttpTranslationContext : IHttpTranslationContext, IHttpRequestCreationContext, IHttpResponseInspectionContext, IHttpTranslationExtractionContext
    {
       private readonly ITranslationContext _context;
 
-      internal HttpTranslationContext( ITranslationContext context )
+      public VPHttpTranslationContext( ITranslationContext context )
       {
          _context = context;
       }

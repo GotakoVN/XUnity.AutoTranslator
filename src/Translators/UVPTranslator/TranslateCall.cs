@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using XUnity.AutoTranslator.Plugin.Core.Shims;
 
 namespace UVPTranslator
@@ -19,9 +20,10 @@ namespace UVPTranslator
         }
         public void Run()
         {
-            Thread worker = new Thread(Worker_DoWork);
-            worker.Start();
+            Worker_DoWork();
+         
         }
+
         public string[] GetResult()
         {
             return result.ToArray();
@@ -35,7 +37,7 @@ namespace UVPTranslator
         {
             foreach (string input in untranslated)
             {
-                string translated = input;
+                string translated = string.Empty;
                 if (Utils.IsChinese(input))
                 {
                     translated = TranslateCenter.Translate(input, "", " ", true);

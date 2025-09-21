@@ -22,6 +22,7 @@ namespace XUnity.AutoTranslator.Plugin.Core.Fonts
          UnityEngine.Object font = null;
 
          var overrideFontPath = Path.Combine( Paths.GameRoot, assetBundle );
+         XuaLogger.AutoTranslator.Info( $"[MANAGED] Attempting to load Text font for TMP Pro from asset bundle {overrideFontPath}" );
          if( File.Exists( overrideFontPath ) )
          {
             XuaLogger.AutoTranslator.Info( "Attempting to load TextMesh Pro font from asset bundle." );
@@ -120,89 +121,91 @@ namespace XUnity.AutoTranslator.Plugin.Core.Fonts
          else
          {
 #if MANAGED
-            var abPath = Path.Combine( Paths.GameRoot, "font" );
-            XuaLogger.AutoTranslator.Info( $"[MANAGED] Attempting to load Text font for TMP Pro from asset bundle {abPath}" );
-            if( File.Exists( abPath ) )
-            {
-               if( bundle == null )
-               {
-                  if( UnityTypes.AssetBundle_Methods.LoadFromFile != null )
-                  {
-                     try
-                     {
-                        bundle = (AssetBundle)UnityTypes.AssetBundle_Methods.LoadFromFile.Invoke( null, new object[] { abPath } );
-                     }
-                     finally
-                     {
-                     }
-                  }
-                  else if( UnityTypes.AssetBundle_Methods.CreateFromFile != null )
-                  {
-                     try
-                     {
-                        bundle = (AssetBundle)UnityTypes.AssetBundle_Methods.CreateFromFile.Invoke( null, new object[] { abPath } );
-                     }
-                     finally
-                     {
-                     }
-                  }
-                  else
-                  {
-                     XuaLogger.AutoTranslator.Error( "Could not find an appropriate asset bundle load method while loading font: " + Settings.OverrideFont );
-                  }
-               }
-               if( bundle != null )
-               {
-                  try
-                  {
-                     string abFontPath = "Assets/Font/" + Settings.OverrideFontTextMeshPro + ".ttf";
-                     XuaLogger.AutoTranslator.Info( $"{abFontPath} from asset bundle {abPath}" );
-                     if( UnityTypes.AssetBundle_Methods.LoadAsset != null )
-                     {
-                        var bundleFont = (UnityEngine.Font)UnityTypes.AssetBundle_Methods.LoadAsset.Invoke( bundle, new object[] { abFontPath, UnityTypes.Font.UnityType } );
-                        var result = CreateManagedTMPAsset( bundleFont );
-                        font = (UnityEngine.Object)result;
-                     }
-                  }
-                  catch( Exception ex )
-                  {
-                     XuaLogger.AutoTranslator.Error( ex.Message );
-                  }
-               }
-            }
             string ttfPath = overrideFontPath + ".ttf";
-            if( File.Exists( ttfPath ) && font == null )
+            if( font == null && File.Exists( ttfPath ) )
             {
                try
                {
                   XuaLogger.AutoTranslator.Info( $"[MANAGED][TMPro] Create font from {ttfPath}" );
                   var ttfFont = new Font( ttfPath );
-                  var result = CreateManagedTMPAsset(ttfFont );
-                  XuaLogger.AutoTranslator.Info( $"{result}" );
+                  var result = CreateManagedTMPAsset( ttfFont );
+                  XuaLogger.AutoTranslator.Info( $"Created {ttfFont.name} successfully!" );
                   font = (UnityEngine.Object)result;
                }
                catch( Exception ex )
                {
-                  XuaLogger.AutoTranslator.Error( ex, "Cannot create TMP_FontAsset from Font Path" );
+                  XuaLogger.AutoTranslator.Error( ex, "[MANAGED][TMPro] Cannot create TMP_FontAsset from Font Path" );
+                  XuaLogger.AutoTranslator.Error( ex.StackTrace);
                }
             }
-            else if (font == null)
+            var abPath = Path.Combine( Paths.GameRoot, "font" );
+            AssetBundle abBundle = null;
+            if( font == null && File.Exists( abPath ) )
             {
-               try
+               XuaLogger.AutoTranslator.Info( $"[MANAGED] Attempting to load Text font for TMP Pro from asset bundle {abPath}" );
+               if( UnityTypes.AssetBundle_Methods.LoadFromFile != null )
                {
-                  XuaLogger.AutoTranslator.Info( $"[MANAGED][TMPro] Create font {assetBundle} from OS" );
-                  var osFont = Font.CreateDynamicFontFromOSFont( assetBundle, 60 );
-                  var result = CreateManagedTMPAsset( osFont );
-                  XuaLogger.AutoTranslator.Info( $"{result}" );
-                  font = (UnityEngine.Object)result;
+                  try
+                  {
+                     abBundle = (AssetBundle)UnityTypes.AssetBundle_Methods.LoadFromFile.Invoke( null, new object[] { abPath } );
+                  }
+                  finally
+                  {
+                  }
                }
-               catch( Exception ex )
+               if( abBundle == null && UnityTypes.AssetBundle_Methods.CreateFromFile != null )
                {
-                  XuaLogger.AutoTranslator.Error( ex, $"Cannot create TMP_FontAsset {assetBundle} from Font OS" );
-                  string fonts = string.Join(",",Font.GetOSInstalledFontNames());
-                  XuaLogger.AutoTranslator.Info( $"{fonts}" );
+                  try
+                  {
+                     abBundle = (AssetBundle)UnityTypes.AssetBundle_Methods.CreateFromFile.Invoke( null, new object[] { abPath } );
+                  }
+                  finally
+                  {
+                  }
+               }
+               if( abBundle == null)
+               {
+                  XuaLogger.AutoTranslator.Error( "Could not find an appropriate asset bundle load method while loading font: " + Settings.OverrideFont );
+               }
+               else
+               {
+                  try
+                  {
+                     string abFontPath = "Assets/Font/" + Settings.OverrideFontTextMeshPro + ".ttf";
+                     XuaLogger.AutoTranslator.Info( $"{abFontPath} from asset bundle {abPath}" );
+                     //if( UnityTypes.AssetBundle_Methods.LoadAsset != null )
+                     //{
+                     var bundleFont = (UnityEngine.Font)UnityTypes.AssetBundle_Methods.LoadAsset.Invoke( abBundle, new object[] { abFontPath, UnityTypes.Font.UnityType } );
+                     var result = CreateManagedTMPAsset( bundleFont );
+                     font = (UnityEngine.Object)result;
+                     //}
+                  }
+                  catch( Exception ex )
+                  {
+                     XuaLogger.AutoTranslator.Error( ex, "Cannot create TMP_FontAsset from 'font' bundle" );
+                     XuaLogger.AutoTranslator.Info( ex.Message );
+                     XuaLogger.AutoTranslator.Error(ex.StackTrace );
+                  }
                }
             }
+            
+            //else if (font == null)
+            //{
+            //   try
+            //   {
+            //      XuaLogger.AutoTranslator.Info( $"[MANAGED][TMPro] Create font {assetBundle} from OS" );
+            //      var osFont = Font.CreateDynamicFontFromOSFont( assetBundle, 60 );
+            //      var result = CreateManagedTMPAsset( osFont );
+            //      XuaLogger.AutoTranslator.Info( $"{result}" );
+            //      font = (UnityEngine.Object)result;
+            //   }
+            //   catch( Exception ex )
+            //   {
+            //      XuaLogger.AutoTranslator.Error( ex, $"Cannot create TMP_FontAsset {assetBundle} from Font OS" );
+            //      string fonts = string.Join(",",Font.GetOSInstalledFontNames());
+            //      XuaLogger.AutoTranslator.Info( $"{fonts}" );
+            //   }
+            //}
 #else
             // DUPLICATE code, I know
             // Try to create ttf font first, from asset bundle, then file name, then system name.
@@ -436,7 +439,7 @@ namespace XUnity.AutoTranslator.Plugin.Core.Fonts
             }
             try
             {
-               XuaLogger.AutoTranslator.Info( $"Try Add special characters" );
+               XuaLogger.AutoTranslator.Info( $"Adding special characters" );
                hasCharMethodInfo.Invoke( result, new object[] { (char)12289, false, true } );
                hasCharMethodInfo.Invoke( result, new object[] { (char)65281, false, true } );
                hasCharMethodInfo.Invoke( result, new object[] { (char)65288, false, true } );

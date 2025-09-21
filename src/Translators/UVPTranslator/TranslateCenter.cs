@@ -287,10 +287,12 @@ namespace UVPTranslator
             NamesPattern = "(" + String.Join("|", Names.Keys.ToArray()) + ")";
         }
 
-        public static string Translate(string translateContent, string prefix = @" ", string postfix = @" ", bool trim = false, bool isName = false)
+        public static string Translate(string inputContent, string prefix = @" ", string postfix = @" ", bool trim = false, bool isName = false)
         {
-            if (!CanWork) return translateContent;
-            if (ConvertChinesePunctuation)
+         if (!CanWork) return inputContent;
+         if (string.IsNullOrEmpty( inputContent ) ) return inputContent;
+         string translateContent = inputContent;
+         if (ConvertChinesePunctuation)
             {
                 StringBuilder result = new StringBuilder(translateContent);
                 result = result.Replace('\uff0c', ',')
@@ -314,73 +316,119 @@ namespace UVPTranslator
                            .Replace('\u300b', ')');
                 translateContent = result.ToString();
             }
-            Regex regex1 = new Regex("({[a-z0-9_%|+-x/#]+}|&[a-z0-9_%|+-x/#]+&)");
-            var matches = regex1.Matches(translateContent);
-            var matched = matches.Count > 0;
-            Dictionary<string, string> bkup = new Dictionary<string, string>();
-            if (matched)
-            {
-                int count = 1;
-                foreach(Match match in matches)
-                {
-                    bkup[$"<<<GROUP_{count}>>>"] = match.Value;
-                    count += 1;
-                }
+
+            //Regex regex1 = new Regex("({[a-z0-9_%|+-x/#]+}|&[a-z0-9_%|+-x/#]+&)");
+            //var matches = regex1.Matches(translateContent);
+            //var matched = matches.Count > 0;
+            //Dictionary<string, string> bkup = new Dictionary<string, string>();
+            //if (matched)
+            //{
+            //    int count = 1;
+            //    foreach(Match match in matches)
+            //    {
+            //        bkup[$"<<<GROUP_{count}>>>"] = match.Value;
+            //        count += 1;
+            //    }
                 
-                // replace string content with bkup key
-                StringBuilder builder = new StringBuilder(translateContent);
-                foreach(var key in bkup.Keys)
-                {
-                    builder.Replace(bkup[key], key);
-                }
-                translateContent = builder.ToString();
-            }
-            StringBuilder translateBuilder = new StringBuilder(translateContent);
-            var orderedKeys = translateMap.Keys.OrderBy(s => s);
+            //    // replace string content with bkup key
+            //    StringBuilder builder = new StringBuilder(translateContent);
+            //    foreach(var key in bkup.Keys)
+            //    {
+            //        builder.Replace(bkup[key], key);
+            //    }
+            //    translateContent = builder.ToString();
+            //}
+            //StringBuilder translateBuilder = new StringBuilder(translateContent);
+            //var orderedKeys = translateMap.Keys.OrderBy(s => s);
+            //bool translated = false;
+            //foreach (var orderKey in orderedKeys)
+            //{
+            //    var list = translateMap[orderKey].AsEnumerable().ToList();
+            //    int count = 0;
+            //    foreach (var t in list)
+            //    {
+            //        if (orderKey != 2)
+            //        {
+            //            translateBuilder = translateBuilder.Replace(t.Key, prefix + t.Value + postfix);
+            //        }
+            //        else
+            //        {
+            //            string val = translateBuilder.ToString();
+            //            Match match = Regex.Match(val, t.Key);
+            //            if (match.Success)
+            //            {
+            //                val = Regex.Replace(val, t.Key, t.Value);
+            //            }
+            //        }
+            //        count++;
+            //        if (count % 10 == 0
+            //            && !IsChinese(StripChineseChars(translateBuilder.ToString())))
+            //        {
+            //            translated = true;
+            //            break;
+            //        }
+            //    }
+            //    if (translated) break;
+            //}
+            //translateContent = translateBuilder.ToString();
+            //// recover old string
+            //if (matched)
+            //{
+            //    StringBuilder builder = new StringBuilder(translateContent);
+            //    foreach (var key in bkup.Keys)
+            //    {
+            //        builder.Replace(key, bkup[key]);
+            //    }
+            //    translateContent = builder.ToString();
+            //}
+            XuaLogger.Common.Info( $"UVP ThanhNgu: {ThanhNgu.Count}" );
+            XuaLogger.Common.Info( $"UVP ThanhNgu: {ThanhNgu.Count}" );
+            XuaLogger.Common.Info( $"UVP ThanhNgu: {ThanhNgu.Count}" );
+            XuaLogger.Common.Info( $"UVP ThanhNgu: {ThanhNgu.Count}" );
+            StringBuilder translateBuilder = new StringBuilder( translateContent );
+            var orderedKeys = translateMap.Keys.OrderBy( s => s );
             bool translated = false;
-            foreach (var orderKey in orderedKeys)
+            foreach( var orderKey in orderedKeys )
             {
-                var list = translateMap[orderKey].AsEnumerable().ToList();
-                int count = 0;
-                foreach (var t in list)
-                {
-                    if (orderKey != 2)
-                    {
-                        translateBuilder = translateBuilder.Replace(t.Key, prefix + t.Value + postfix);
-                    }
-                    else
-                    {
-                        string val = translateBuilder.ToString();
-                        Match match = Regex.Match(val, t.Key);
-                        if (match.Success)
-                        {
-                            val = Regex.Replace(val, t.Key, t.Value);
-                        }
-                    }
-                    count++;
-                    if (count % 10 == 0
-                        && !IsChinese(StripChineseChars(translateBuilder.ToString())))
-                    {
-                        translated = true;
-                        break;
-                    }
-                }
-                if (translated) break;
+               var list = translateMap[ orderKey ].AsEnumerable().ToList();
+               XuaLogger.Common.Info( $"UVP list: {orderKey} : {list.Count}" );
+               int count = 0;
+               foreach( var t in list )
+               {
+                  if( orderKey != 2 )
+                  {
+                     if( !string.IsNullOrEmpty( t.Key ) )
+                     {
+                        translateBuilder = translateBuilder.Replace( t.Key, prefix + t.Value + postfix );
+                     }
+                  }
+                  else
+                  {
+                     string val = translateBuilder.ToString();
+                     Match match = Regex.Match( val, t.Key );
+                     if( match.Success )
+                     {
+                        val = Regex.Replace( val, t.Key, t.Value );
+                     }
+                  }
+                  count++;
+                  if( count % 10 == 0
+                      && !IsChinese( StripChineseChars( translateBuilder.ToString() ) ) )
+                  {
+                     translated = true;
+                     break;
+                  }
+               }
+               if( translated ) break;
             }
             translateContent = translateBuilder.ToString();
-            // recover old string
-            if (matched)
-            {
-                StringBuilder builder = new StringBuilder(translateContent);
-                foreach (var key in bkup.Keys)
-                {
-                    builder.Replace(key, bkup[key]);
-                }
-                translateContent = builder.ToString();
-            }
-            
             ThanhNgu.AsEnumerable().ToList().ForEach(t =>
-                translateContent = translateContent.Replace(t.Key, prefix + t.Value + postfix));
+            {
+               if (!string.IsNullOrEmpty(t.Key))
+               {
+                  translateContent = translateContent.Replace( t.Key, prefix + t.Value + postfix );
+               }
+            });
             if (CleanTwoSpaces)
             {
                 translateContent = Regex.Replace(translateContent, @"( )+", " ");
@@ -400,6 +448,7 @@ namespace UVPTranslator
             {
                 translateContent = translateContent.FirstUpper();
             }
+            XuaLogger.Common.Info( $"UVP End Of Translate Call: {translateContent}" );
             return translateContent;
         }
         public static bool IsChinese(string c)

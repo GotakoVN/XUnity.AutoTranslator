@@ -197,37 +197,37 @@ namespace XUnity.AutoTranslator.Plugin.Core
             var previousFont = fontProperty.Get( ui );
             if( previousFont == null ) return;
             var newFont = FontCache.GetOrCreateOverrideFontTextMeshPro();
-            // if( newFont == null || previousFont == null ) return;
+            if( newFont == null || previousFont == null ) return;
             if( newFont == null ) return;
-            var fontNameField = clrType.CachedField( "name" );
-            string previousFontNameValue = (string)fontNameField.Get( previousFont );
-            string newFontValue = (string)fontNameField.Get( newFont );
-            try
-            {
-               if( Settings.DebugControlName )
-               {
-                  XuaLogger.AutoTranslator.Info( $"Unity.TMPro: previousFontNameValue {previousFontNameValue}: Change newFontValue {newFontValue}" );
-               }
-            }
-            finally
-            {
+            //var fontNameField = clrType.CachedField( "name" );
+            //string previousFontNameValue = (string)fontNameField.Get( previousFont );
+            //string newFontValue = (string)fontNameField.Get( newFont );
+            //try
+            //{
+            //   if( Settings.DebugControlName )
+            //   {
+            //      XuaLogger.AutoTranslator.Info( $"Unity.TMPro: previousFontNameValue {previousFontNameValue}: Change newFontValue {newFontValue}" );
+            //   }
+            //}
+            //finally
+            //{
 
-            }
+            //}
             
-            if( !string.IsNullOrEmpty( Settings.SkipFontNames ) )
-            {
-               string[] splitNames = Settings.SkipFontNames.Split( ',' );
-               bool shouldReturn = false;
-               foreach( var splitName in splitNames )
-               {
-                  if( splitName.Trim().Equals( previousFontNameValue ) )
-                  {
-                     shouldReturn = true;
-                     break;
-                  }
-               }
-               if( shouldReturn ) { return; }
-            }
+            //if( !string.IsNullOrEmpty( Settings.SkipFontNames ) )
+            //{
+            //   string[] splitNames = Settings.SkipFontNames.Split( ',' );
+            //   bool shouldReturn = false;
+            //   foreach( var splitName in splitNames )
+            //   {
+            //      if( splitName.Trim().Equals( previousFontNameValue ) )
+            //      {
+            //         shouldReturn = true;
+            //         break;
+            //      }
+            //   }
+            //   if( shouldReturn ) { return; }
+            //}
 
             if( !UnityObjectReferenceComparer.Default.Equals( newFont, previousFont ) )
             {
@@ -265,13 +265,13 @@ namespace XUnity.AutoTranslator.Plugin.Core
                };
                try
                {
-                  //var fontMaterialField = clrType.CachedField( "fontMaterial" );
-                  //var material = clrType.CachedField( "material" );
-                  //var materialValue = material.Get( newFont );
-                  //if (materialValue != null )
-                  //{
-                  //   fontMaterialField.Set( ui, material );
-                  //}
+                  var fontMaterialField = clrType.CachedField( "fontMaterial" );
+                  var material = clrType.CachedField( "material" );
+                  var materialValue = material.Get( newFont );
+                  if( materialValue != null )
+                  {
+                     fontMaterialField.Set( ui, material );
+                  }
                }
                catch( Exception ex )
                {
